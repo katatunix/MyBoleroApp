@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Bolero.MudBlazor.fs" />
+    <Compile Include="Common.fs" />
+    <Compile Include="Home.fs" />
+    <Compile Include="Counter.fs" />
+    <Compile Include="NotFound.fs" />
+    <Compile Include="Main.fs" />
+    <Compile Include="Startup.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Bolero" Version="0.24.37" />
+    <PackageReference Include="Bolero.Build" Version="0.24.37" />
+    <PackageReference Include="Elmish" Version="4.2.0" />
+    <PackageReference Include="MudBlazor" Version="7.15.0" />
+    
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.3.13" />
+    
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" />
+  </ItemGroup>
+</Project>
