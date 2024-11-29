@@ -1,4 +1,4 @@
-name: DeployToGitHubPages
+name: Build and Deploy
 
 on:
   push:
@@ -8,8 +8,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
