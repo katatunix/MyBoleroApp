@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MyBoleroApp",
   "resources": {
-    "hash": "sha256-VnaENuGCTStHET0h3V4n18sAncxpgdZIQ/EDbDCghyw=",
+    "hash": "sha256-g7vc47PSXYOPqAxNQtKCAMuoDeKx+uMrHDS5iCBs3x8=",
     "fingerprinting": {
       "Bolero.ot05x1q6yw.wasm": "Bolero.wasm",
       "Elmish.cenhj15mxn.wasm": "Elmish.wasm",
@@ -23,8 +23,8 @@
       "Microsoft.Extensions.Primitives.8gcpmtr73m.wasm": "Microsoft.Extensions.Primitives.wasm",
       "Microsoft.JSInterop.vbgjtaistr.wasm": "Microsoft.JSInterop.wasm",
       "Microsoft.JSInterop.WebAssembly.heoad7mujs.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
-      "MudBlazor.bcp0gtwwcn.wasm": "MudBlazor.wasm",
-      "MyBoleroApp.59dnao59nf.wasm": "MyBoleroApp.wasm",
+      "MudBlazor.lhfr63i5tc.wasm": "MudBlazor.wasm",
+      "MyBoleroApp.use3iw6egf.wasm": "MyBoleroApp.wasm",
       "System.Collections.Concurrent.w8hfg12amu.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.c2cp2icptw.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.r8e2tmrdq5.wasm": "System.Collections.NonGeneric.wasm",
@@ -85,8 +85,8 @@
       "Microsoft.Extensions.Primitives.8gcpmtr73m.wasm": "sha256-SOV/buK8+b547bCGV72fveEpbdwQKkvc60CYQA4qIt4=",
       "Microsoft.JSInterop.vbgjtaistr.wasm": "sha256-a55WYCaycB8aUpAsLC/Amip8LqEGJGwHC3Pjb3544lc=",
       "Microsoft.JSInterop.WebAssembly.heoad7mujs.wasm": "sha256-99wG3VH14sWkwPaF5rX6YAcJvtAhDuqonwihvj2m5HA=",
-      "MudBlazor.bcp0gtwwcn.wasm": "sha256-tduujXwqkiSgMdCzEvILuYKTHH8fb70F1scE9RdbjxI=",
-      "MyBoleroApp.59dnao59nf.wasm": "sha256-2dxeRdJuHKQ2wwgv7YR783LAzXiOWPD/nT/6ZB6sh54=",
+      "MudBlazor.lhfr63i5tc.wasm": "sha256-KZnwUIMaBTVgvVuy7+0nFIsZWg/Pnh+ky6mV98/uwWU=",
+      "MyBoleroApp.use3iw6egf.wasm": "sha256-rh/CaGMPAFUnx9WDc3N/U419jrXhCiYegThI+g5DSXk=",
       "System.Collections.Concurrent.w8hfg12amu.wasm": "sha256-EFlKXbINYmd8kbPA44v2vq9rnByDfTNKaLdrknq4Ej8=",
       "System.Collections.Immutable.c2cp2icptw.wasm": "sha256-VNN6CFGTsitrnUWU1JetDqpHPObP1Du7UHCLKWK8smw=",
       "System.Collections.NonGeneric.r8e2tmrdq5.wasm": "sha256-ZQZ/0uqldEe3j9KR4Xff3s5ViB/Eld4kXXI/kDHPx1k=",
