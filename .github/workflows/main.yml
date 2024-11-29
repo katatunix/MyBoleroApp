@@ -1,12 +1,8 @@
-name: Build and Deploy
+name: build and deploy
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: write
@@ -15,22 +11,22 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v4
       
-      - name: Setup .NET SDK
+      - name: setup .net sdk
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 9.0.100
 
-      - name: Install wasm-tools workload
+      - name: install wasm-tools
         run: dotnet workload install wasm-tools
       
-      - name: Run dotnet publish
-        run: dotnet publish -c Release -o publish -p:GHPages=true --nologo
+      - name: dotnet publish
+        run: dotnet publish -p:GHPages=true -o dist
 
-      - name: Commit wwwroot to GitHub Pages
+      - name: deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           BRANCH: gh-pages
-          FOLDER: publish/wwwroot
+          FOLDER: dist/wwwroot
