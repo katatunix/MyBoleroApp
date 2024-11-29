@@ -14,5 +14,14 @@ let render () =
                 "Home"
             }
         }
-        comp<MudText> { attr.Typo Typo.h4; "Welcome to the hell" }
+        comp<MudStack> {
+            for _ = 1 to 100 do
+            comp<MudPaper> {
+                attr.Class "pa-4"
+                comp<MudText> {
+                    attr.style "font-family:monospace"
+                    System.Guid.NewGuid().ToString()
+                }
+            }
+        }
     }

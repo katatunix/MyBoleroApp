@@ -81,7 +81,7 @@ let render model dispatch =
     let appBar =
         comp<MudAppBar> {
             comp<MudIconButton> {
-                attr.Icon Icons.Material.Filled.Menu
+                attr.Icon (if model.IsMenuOpen then Icons.Material.Filled.MenuOpen else Icons.Material.Filled.Menu)
                 attr.Color Color.Inherit
                 attr.Edge Edge.Start
                 on.click (fun _ -> dispatch ToggleMenuOpen)
@@ -149,7 +149,7 @@ let render model dispatch =
             comp<MudMainContent> {
                 comp<MudContainer> {
                     attr.MaxWidth MaxWidth.ExtraLarge
-                    attr.Class "pt-5"
+                    attr.Class "py-5"
                     main
                 }
             }
