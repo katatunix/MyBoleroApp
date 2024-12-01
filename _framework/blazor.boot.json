@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MyBoleroApp",
   "resources": {
-    "hash": "sha256-AhGwFbIEzZ6sYXBD+wVmN+L6VjGecBdsdLRHOybN5D0=",
+    "hash": "sha256-2fq3fDwrTbTZesnE+Kd/10fJ20chpHh0hwVI7nk0RnE=",
     "fingerprinting": {
       "Bolero.Html.7q0b8h6q6k.wasm": "Bolero.Html.wasm",
       "Bolero.ot05x1q6yw.wasm": "Bolero.wasm",
@@ -24,8 +24,8 @@
       "Microsoft.Extensions.Primitives.8gcpmtr73m.wasm": "Microsoft.Extensions.Primitives.wasm",
       "Microsoft.JSInterop.vbgjtaistr.wasm": "Microsoft.JSInterop.wasm",
       "Microsoft.JSInterop.WebAssembly.heoad7mujs.wasm": "Microsoft.JSInterop.WebAssembly.wasm",
-      "MudBlazor.kwe9fw9061.wasm": "MudBlazor.wasm",
-      "MyBoleroApp.kouyx3dnav.wasm": "MyBoleroApp.wasm",
+      "MudBlazor.l72ykvyhfs.wasm": "MudBlazor.wasm",
+      "MyBoleroApp.sifn0qhzk8.wasm": "MyBoleroApp.wasm",
       "System.Collections.Concurrent.w8hfg12amu.wasm": "System.Collections.Concurrent.wasm",
       "System.Collections.Immutable.c2cp2icptw.wasm": "System.Collections.Immutable.wasm",
       "System.Collections.NonGeneric.r8e2tmrdq5.wasm": "System.Collections.NonGeneric.wasm",
@@ -41,14 +41,14 @@
       "System.Memory.0023jbmx4z.wasm": "System.Memory.wasm",
       "System.Net.Http.pjzx8nwtbu.wasm": "System.Net.Http.wasm",
       "System.Net.Primitives.rcgya37loz.wasm": "System.Net.Primitives.wasm",
-      "System.Private.CoreLib.7vdq1jagi0.wasm": "System.Private.CoreLib.wasm",
+      "System.Private.CoreLib.ynynr8mr66.wasm": "System.Private.CoreLib.wasm",
       "System.Private.Uri.ksno3c0k2a.wasm": "System.Private.Uri.wasm",
       "System.Runtime.InteropServices.JavaScript.x50649m5t2.wasm": "System.Runtime.InteropServices.JavaScript.wasm",
       "System.Text.Encodings.Web.uq6aoluzre.wasm": "System.Text.Encodings.Web.wasm",
       "System.Text.Json.22me5qvghf.wasm": "System.Text.Json.wasm",
       "System.Text.RegularExpressions.3d8kr7619z.wasm": "System.Text.RegularExpressions.wasm",
       "dotnet.native.vpt06hhmkd.js": "dotnet.native.js",
-      "dotnet.native.73lpjkxobn.wasm": "dotnet.native.wasm",
+      "dotnet.native.his0gw525v.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
       "dotnet.runtime.o8gq1i8bk6.js": "dotnet.runtime.js"
     },
@@ -59,10 +59,10 @@
       "dotnet.runtime.o8gq1i8bk6.js": "sha256-uD1t4tsPtmIHsx30SC4OztehGGaHVDksFD38rL2e3P4="
     },
     "wasmNative": {
-      "dotnet.native.73lpjkxobn.wasm": "sha256-Awos8T59aBQ316wDhLgb3WnmENIBJG+ltI3vxCza7GM="
+      "dotnet.native.his0gw525v.wasm": "sha256-WfCXCZU+kiUBfy8WbXgdfkHBFsFM/wG33FDzQwk0noU="
     },
     "coreAssembly": {
-      "System.Private.CoreLib.7vdq1jagi0.wasm": "sha256-szWjUjz5ggB71LZnrRbV/VDHHirg3pA1kTqA/FPaVoE=",
+      "System.Private.CoreLib.ynynr8mr66.wasm": "sha256-wrXLbESVSqyxZjtN9jLc8OcIsGDHFITM+PP53NsDb8w=",
       "System.Runtime.InteropServices.JavaScript.x50649m5t2.wasm": "sha256-VS4CSyZJNRAj+SrJqgbXBFWlGMlNDgM4rbwJ6gTH5qg="
     },
     "assembly": {
@@ -87,8 +87,8 @@
       "Microsoft.Extensions.Primitives.8gcpmtr73m.wasm": "sha256-SOV/buK8+b547bCGV72fveEpbdwQKkvc60CYQA4qIt4=",
       "Microsoft.JSInterop.vbgjtaistr.wasm": "sha256-a55WYCaycB8aUpAsLC/Amip8LqEGJGwHC3Pjb3544lc=",
       "Microsoft.JSInterop.WebAssembly.heoad7mujs.wasm": "sha256-99wG3VH14sWkwPaF5rX6YAcJvtAhDuqonwihvj2m5HA=",
-      "MudBlazor.kwe9fw9061.wasm": "sha256-tDJd9cLqTvlo8mFDZ54J2CQ49aacRrcE98+3/OEqqnE=",
-      "MyBoleroApp.kouyx3dnav.wasm": "sha256-1AxIWUDyqBJDKD3noJZ3NchNaFj6qAwGLHnz/2UEsY0=",
+      "MudBlazor.l72ykvyhfs.wasm": "sha256-sQ9E7mTunqp+Xiycltj2uvlyOvjZzuXygLM11wehjNM=",
+      "MyBoleroApp.sifn0qhzk8.wasm": "sha256-rNkTA91iDGKi9GVFzzGrrQ0bRu3fZeozRowhMjXfbXs=",
       "System.Collections.Concurrent.w8hfg12amu.wasm": "sha256-EFlKXbINYmd8kbPA44v2vq9rnByDfTNKaLdrknq4Ej8=",
       "System.Collections.Immutable.c2cp2icptw.wasm": "sha256-VNN6CFGTsitrnUWU1JetDqpHPObP1Du7UHCLKWK8smw=",
       "System.Collections.NonGeneric.r8e2tmrdq5.wasm": "sha256-ZQZ/0uqldEe3j9KR4Xff3s5ViB/Eld4kXXI/kDHPx1k=",
