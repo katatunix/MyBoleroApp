@@ -23,6 +23,9 @@ module attr =
     let Size (value: Size) = Attr.Make "Size" value
     let Src (value: string) = Attr.Make "Src" value
     let ObjectFit (value: ObjectFit) = Attr.Make "ObjectFit" value
+    let ButtonType (value: ButtonType) = Attr.Make "ButtonType" value
+    let StartIcon (value: string) = Attr.Make "StartIcon" value
+    let EndIcon (value: string) = Attr.Make "EndIcon" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action

@@ -14,12 +14,14 @@ type Url =
     | [<EndPoint "/">] Home
     | [<EndPoint "/counter?{start}">] Counter of start: int option
     | [<EndPoint "/random-picture">] RandomPicture
+    | [<EndPoint "/peic-result">] PeicResult
 
 type Page =
     | NotFound
     | Home
     | Counter of Counter.Model
     | RandomPicture of RandomPicture.Model
+    | PeicResult
 
 type Model =
     { CurrentUrl: Url
@@ -65,6 +67,11 @@ let update (_http: HttpClient) msg model =
         { model with CurrentUrl = url }, Cmd.none
     | UrlChanged (Url.RandomPicture as url), _ ->
         { model with CurrentUrl = url; CurrentPage = RandomPicture (RandomPicture.init()) }, Cmd.none
+
+    | UrlChanged (Url.PeicResult as url), PeicResult ->
+        { model with CurrentUrl = url }, Cmd.none
+    | UrlChanged (Url.PeicResult as url), _ ->
+        { model with CurrentUrl = url; CurrentPage = PeicResult }, Cmd.none
 
     | SetDarkMode value, _ ->
         { model with IsDarkMode = value }, Cmd.none
@@ -143,19 +150,26 @@ let render model dispatch =
                     attr.Match NavLinkMatch.All
                     "Random Picture"
                 }
+                comp<MudNavLink> {
+                    router.HRef Url.PeicResult
+                    attr.Match NavLinkMatch.All
+                    "PEIC Result"
+                }
             }
         }
 
     let main =
         match model.CurrentPage with
+        | NotFound ->
+            NotFound.render ()
         | Home ->
             Home.render ()
         | Counter m ->
             Counter.render (router.Link Url.Home) m (CounterMsg >> dispatch)
         | RandomPicture m ->
             RandomPicture.render m (RandomPictureMsg >> dispatch)
-        | NotFound ->
-            NotFound.render ()
+        | PeicResult ->
+            PeicResult.render ()
 
     concat {
         comp<MudThemeProvider> {

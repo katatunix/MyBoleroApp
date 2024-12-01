@@ -33,7 +33,7 @@ let render model dispatch =
                 "Next"
             }
             comp<MudImage> {
-                attr.Src $"https://picsum.photos/2000/1000?random={model.Nonce}"
+                attr.Src $"https://picsum.photos/2000/1400?random={model.Nonce}"
                 attr.ObjectFit ObjectFit.Cover
             }
         }
