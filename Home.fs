@@ -15,7 +15,7 @@ let render () =
             }
         }
         comp<MudStack> {
-            for _ = 1 to 100 do
+            for _ = 1 to 10 do
             comp<MudPaper> {
                 attr.Class "pa-4"
                 comp<MudText> {

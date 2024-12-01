@@ -59,9 +59,9 @@ let render homeUrl model dispatch =
                     "Decrease"
                 }
             }
-            comp<MudLink> {
-                attr.Href homeUrl
-                "Back to Home"
-            }
+            // comp<MudLink> {
+            //     attr.Href homeUrl
+            //     "Back to Home"
+            // }
         }
     }

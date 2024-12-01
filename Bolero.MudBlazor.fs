@@ -21,6 +21,8 @@ module attr =
     let MaxWidth (value: MaxWidth) = Attr.Make "MaxWidth" value
     let AlignItems (value: AlignItems) = Attr.Make "AlignItems" value
     let Size (value: Size) = Attr.Make "Size" value
+    let Src (value: string) = Attr.Make "Src" value
+    let ObjectFit (value: ObjectFit) = Attr.Make "ObjectFit" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action

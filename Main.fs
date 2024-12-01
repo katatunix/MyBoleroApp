@@ -10,14 +10,16 @@ open Bolero.Html
 open MudBlazor
 
 type Url =
+    | NotFound
     | [<EndPoint "/">] Home
     | [<EndPoint "/counter?{start}">] Counter of start: int option
-    | NotFound
+    | [<EndPoint "/random-picture">] RandomPicture
 
 type Page =
+    | NotFound
     | Home
     | Counter of Counter.Model
-    | NotFound
+    | RandomPicture of RandomPicture.Model
 
 type Model =
     { CurrentUrl: Url
@@ -31,6 +33,7 @@ type Msg =
     | SetMenuOpen of bool
     | ToggleMenuOpen
     | CounterMsg of Counter.Msg
+    | RandomPictureMsg of RandomPicture.Msg
 
 let router =
     Router.infer UrlChanged _.CurrentUrl
@@ -45,6 +48,9 @@ let init _ =
 
 let update (_http: HttpClient) msg model =
     match msg, model.CurrentPage with
+    | UrlChanged (Url.NotFound as url), _ ->
+        { model with CurrentUrl = url; CurrentPage = NotFound }, Cmd.none
+
     | UrlChanged (Url.Home as url), Home ->
         { model with CurrentUrl = url }, Cmd.none
     | UrlChanged (Url.Home as url), _ ->
@@ -55,8 +61,10 @@ let update (_http: HttpClient) msg model =
     | UrlChanged (Url.Counter start as url), _ ->
         { model with CurrentUrl = url; CurrentPage = Counter (Counter.init start) }, Cmd.none
 
-    | UrlChanged (Url.NotFound as url), _ ->
-        { model with CurrentUrl = url; CurrentPage = NotFound }, Cmd.none
+    | UrlChanged (Url.RandomPicture as url), RandomPicture _ ->
+        { model with CurrentUrl = url }, Cmd.none
+    | UrlChanged (Url.RandomPicture as url), _ ->
+        { model with CurrentUrl = url; CurrentPage = RandomPicture (RandomPicture.init()) }, Cmd.none
 
     | SetDarkMode value, _ ->
         { model with IsDarkMode = value }, Cmd.none
@@ -73,6 +81,9 @@ let update (_http: HttpClient) msg model =
             { model with CurrentPage = Counter m }, Cmd.none
         | _, Counter.NavigateToHome ->
             { model with CurrentUrl = Url.Home; CurrentPage = Home }, Cmd.none
+
+    | RandomPictureMsg msg, RandomPicture m ->
+        { model with CurrentPage = RandomPicture (RandomPicture.update msg m) }, Cmd.none
 
     | _ ->
         failwithf "oops!!! (msg: %A) (model: %A)" msg model
@@ -127,6 +138,11 @@ let render model dispatch =
                     attr.Match NavLinkMatch.Prefix
                     "Counter"
                 }
+                comp<MudNavLink> {
+                    router.HRef Url.RandomPicture
+                    attr.Match NavLinkMatch.All
+                    "Random Picture"
+                }
             }
         }
 
@@ -136,6 +152,8 @@ let render model dispatch =
             Home.render ()
         | Counter m ->
             Counter.render (router.Link Url.Home) m (CounterMsg >> dispatch)
+        | RandomPicture m ->
+            RandomPicture.render m (RandomPictureMsg >> dispatch)
         | NotFound ->
             NotFound.render ()
 
