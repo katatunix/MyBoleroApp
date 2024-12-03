@@ -44,6 +44,8 @@ let render homeUrl model dispatch =
         comp<MudStack> {
             comp<MudText> {
                 attr.Typo Typo.h4
+                attr.Color Color.Success
+                attr.style "font-family:monospace"
                 string model.Count
             }
             comp<MudStack> {

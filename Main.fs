@@ -49,7 +49,7 @@ let init _ =
       CurrentPage = Home },
     Cmd.none
 
-let update (js: IJSRuntime, http: HttpClient, snackbar: ISnackbar) msg model =
+let update (snackbar: ISnackbar) msg model =
     let model =
         match msg with
         | UrlChanged url -> { model with CurrentUrl = url }
@@ -72,7 +72,7 @@ let update (js: IJSRuntime, http: HttpClient, snackbar: ISnackbar) msg model =
         { model with CurrentPage = Counter (Counter.init start) }, Cmd.none
 
     | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
-        let m, cmd = RandomPicture.init (js, http)
+        let m, cmd = RandomPicture.init ()
         { model with CurrentPage = RandomPicture m }, cmd |> Cmd.map RandomPictureMsg
 
     | UrlChanged Url.PeicResult, _ ->
@@ -96,7 +96,7 @@ let update (js: IJSRuntime, http: HttpClient, snackbar: ISnackbar) msg model =
             { model with CurrentUrl = Url.Home; CurrentPage = Home }, Cmd.none
 
     | RandomPictureMsg msg, RandomPicture m ->
-        let m, cmd = m |> RandomPicture.update (js, http) msg
+        let m, cmd = m |> RandomPicture.update msg
         { model with CurrentPage = RandomPicture m },
         cmd |> Cmd.map RandomPictureMsg
 
@@ -212,7 +212,10 @@ type App() =
     member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
 
     override this.Program =
-        let update = update (this.JSRuntime, this.HttpClient, this.Snackbar)
+        JS.runtime <- this.JSRuntime
+        Http.client <- this.HttpClient
+
+        let update = update this.Snackbar
 
         Program.mkProgram init update render
         |> Program.withRouter router

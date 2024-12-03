@@ -1,10 +1,8 @@
 module MyBoleroApp.RandomPicture
 
-open System.Net.Http
 open Bolero.Html
 open Elmish
 open Microsoft.AspNetCore.Components.Sections
-open Microsoft.JSInterop
 open MudBlazor
 open Bolero.MudBlazor
 open MyBoleroApp.Components
@@ -20,17 +18,17 @@ let [<Literal>] private Url =
     // "https://pic.re/image"
     "https://picsum.photos/2000/1200"
 
-let init (js: IJSRuntime, http: HttpClient) =
-    let m, cmd = LoadingImage.init (js, http) Url
+let init () =
+    let m, cmd = LoadingImage.init Url
     { Image = m }, cmd |> Cmd.map ImageMsg
 
-let update (js, http) msg model =
+let update msg model =
     match msg with
     | Next ->
-        let m, cmd = model.Image |> LoadingImage.update (js, http) LoadingImage.Msg.StartLoad
+        let m, cmd = model.Image |> LoadingImage.update LoadingImage.Msg.StartLoad
         { model with Image = m }, cmd |> Cmd.map ImageMsg
     | ImageMsg msg ->
-        let m, cmd = model.Image |> LoadingImage.update (js, http) msg
+        let m, cmd = model.Image |> LoadingImage.update msg
         { model with Image = m }, cmd |> Cmd.map ImageMsg
 
 let dispose model =
