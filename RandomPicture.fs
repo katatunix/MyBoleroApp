@@ -8,25 +8,30 @@ open Bolero.MudBlazor
 open MyBoleroApp.Components
 
 type Model =
-    { Image: LoadingImage.Model }
+    { Seed: int
+      Image: LoadingImage.Model
+    }
 
 type Msg =
     | Next
+    | Prev
     | ImageMsg of LoadingImage.Msg
 
-let [<Literal>] private Url =
-    // "https://pic.re/image"
-    "https://picsum.photos/2000/1200"
+let makeUrl (seed: int) =
+    $"https://picsum.photos/seed/{seed}/2000/1200"
 
 let init () =
-    let m, cmd = LoadingImage.init Url
-    { Image = m }, cmd |> Cmd.map ImageMsg
+    let seed = Common.random.Next(1000000)
+    let m, cmd = LoadingImage.init (makeUrl seed)
+    { Seed = seed; Image = m }, cmd |> Cmd.map ImageMsg
 
 let update msg model =
     match msg with
-    | Next ->
-        let m, cmd = model.Image |> LoadingImage.update LoadingImage.Msg.StartLoad
-        { model with Image = m }, cmd |> Cmd.map ImageMsg
+    | Next | Prev ->
+        let seed = model.Seed + (if msg = Next then 1 else -1)
+        let m, cmd = model.Image |> LoadingImage.update (LoadingImage.Msg.StartLoad (makeUrl seed))
+        { model with Seed = seed; Image = m }, cmd |> Cmd.map ImageMsg
+
     | ImageMsg msg ->
         let m, cmd = model.Image |> LoadingImage.update msg
         { model with Image = m }, cmd |> Cmd.map ImageMsg
@@ -50,12 +55,23 @@ let render model dispatch =
         }
         comp<MudStack> {
             LoadingImage.render model.Image
-            comp<MudButton> {
-                attr.Variant Variant.Filled
-                attr.Color Color.Primary
-                attr.disabled model.Image.IsLoading
-                on.click (fun _ -> dispatch Next)
-                "Next"
+            comp<MudStack> {
+                attr.Row true
+                attr.Justify Justify.Center
+                comp<MudButton> {
+                    attr.Variant Variant.Filled
+                    attr.Color Color.Primary
+                    attr.disabled model.Image.IsLoading
+                    on.click (fun _ -> dispatch Prev)
+                    "Prev"
+                }
+                comp<MudButton> {
+                    attr.Variant Variant.Filled
+                    attr.Color Color.Primary
+                    attr.disabled model.Image.IsLoading
+                    on.click (fun _ -> dispatch Next)
+                    "Next"
+                }
             }
         }
     }

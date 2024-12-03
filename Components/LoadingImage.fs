@@ -23,7 +23,7 @@ type Model =
     member this.IsLoading = this.State.IsLoading
 
 type Msg =
-    | StartLoad
+    | StartLoad of url: string
     | EndLoad of Result<Data, string>
 
 let private loadCmd (imageUrl: string) =
@@ -50,11 +50,11 @@ let private revoke = function
 
 let update msg model =
     match msg, model.State with
-    | StartLoad, Loading ->
+    | StartLoad _, Loading ->
         model, Cmd.none
-    | StartLoad, Done result ->
+    | StartLoad url, Done result ->
         revoke result
-        { model with State = Loading }, loadCmd model.Url
+        { model with Url = url; State = Loading }, loadCmd url
 
     | EndLoad result, Loading ->
         { model with State = Done result }, Cmd.none
