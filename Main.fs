@@ -7,6 +7,7 @@ open Microsoft.AspNetCore.Components.Sections
 open Elmish
 open Bolero
 open Bolero.Html
+open Microsoft.JSInterop
 open MudBlazor
 
 type Url =
@@ -48,30 +49,40 @@ let init _ =
       CurrentPage = Home },
     Cmd.none
 
-let update (_http: HttpClient) msg model =
+let update (js: IJSRuntime, http: HttpClient, snackbar: ISnackbar) msg model =
+    let model =
+        match msg with
+        | UrlChanged url -> { model with CurrentUrl = url }
+        | _ -> model
+
+    match model.CurrentPage, msg with
+    | RandomPicture m, UrlChanged url when not url.IsRandomPicture -> m |> RandomPicture.dispose
+    | _ -> ()
+
     match msg, model.CurrentPage with
-    | UrlChanged (Url.NotFound as url), _ ->
-        { model with CurrentUrl = url; CurrentPage = NotFound }, Cmd.none
+    | UrlChanged Url.NotFound, _ ->
+        { model with CurrentPage = NotFound }, Cmd.none
 
-    | UrlChanged (Url.Home as url), Home ->
-        { model with CurrentUrl = url }, Cmd.none
-    | UrlChanged (Url.Home as url), _ ->
-        { model with CurrentUrl = url; CurrentPage = Home }, Cmd.none
+    | UrlChanged Url.Home, Home ->
+        model, Cmd.none
+    | UrlChanged Url.Home, _ ->
+        { model with CurrentPage = Home }, Cmd.none
 
-    | UrlChanged (Url.Counter start as url), Counter _ ->
-        { model with CurrentUrl = url }, Cmd.none
-    | UrlChanged (Url.Counter start as url), _ ->
-        { model with CurrentUrl = url; CurrentPage = Counter (Counter.init start) }, Cmd.none
+    | UrlChanged (Url.Counter _), Counter _ ->
+        model, Cmd.none
+    | UrlChanged (Url.Counter start), _ ->
+        { model with CurrentPage = Counter (Counter.init start) }, Cmd.none
 
-    | UrlChanged (Url.RandomPicture as url), RandomPicture _ ->
-        { model with CurrentUrl = url }, Cmd.none
-    | UrlChanged (Url.RandomPicture as url), _ ->
-        { model with CurrentUrl = url; CurrentPage = RandomPicture (RandomPicture.init()) }, Cmd.none
+    | UrlChanged Url.RandomPicture, RandomPicture _ ->
+        model, Cmd.none
+    | UrlChanged Url.RandomPicture, _ ->
+        let m, cmd = RandomPicture.init (js, http)
+        { model with CurrentPage = RandomPicture m }, cmd |> Cmd.map RandomPictureMsg
 
-    | UrlChanged (Url.PeicResult as url), PeicResult ->
-        { model with CurrentUrl = url }, Cmd.none
-    | UrlChanged (Url.PeicResult as url), _ ->
-        { model with CurrentUrl = url; CurrentPage = PeicResult }, Cmd.none
+    | UrlChanged Url.PeicResult, PeicResult ->
+        model, Cmd.none
+    | UrlChanged Url.PeicResult, _ ->
+        { model with CurrentPage = PeicResult }, Cmd.none
 
     | SetDarkMode value, _ ->
         { model with IsDarkMode = value }, Cmd.none
@@ -80,6 +91,7 @@ let update (_http: HttpClient) msg model =
         { model with IsMenuOpen = value }, Cmd.none
 
     | ToggleMenuOpen, _ ->
+        snackbar.Add($"ToggleMenuOpen {System.DateTime.Now}", Severity.Success)  |>ignore
         { model with IsMenuOpen = not model.IsMenuOpen }, Cmd.none
 
     | CounterMsg msg, Counter m ->
@@ -90,10 +102,12 @@ let update (_http: HttpClient) msg model =
             { model with CurrentUrl = Url.Home; CurrentPage = Home }, Cmd.none
 
     | RandomPictureMsg msg, RandomPicture m ->
-        { model with CurrentPage = RandomPicture (RandomPicture.update msg m) }, Cmd.none
+        let m, cmd = m |> RandomPicture.update (js, http) msg
+        { model with CurrentPage = RandomPicture m },
+        cmd |> Cmd.map RandomPictureMsg
 
     | _ ->
-        failwithf "oops!!! (msg: %A) (model: %A)" msg model
+        model, Cmd.none
 
 let render model dispatch =
     let appBar =
@@ -175,6 +189,7 @@ let render model dispatch =
         comp<MudThemeProvider> {
             attr.IsDarkMode model.IsDarkMode
         }
+        comp<MudSnackbarProvider>
         comp<MudLayout> {
             appBar
             sideBar
@@ -192,12 +207,18 @@ type App() =
     inherit ProgramComponent<Model, Msg>()
 
     [<Inject>]
+    member val JSRuntime = Unchecked.defaultof<IJSRuntime> with get, set
+    [<Inject>]
     member val HttpClient = Unchecked.defaultof<HttpClient> with get, set
+    [<Inject>]
+    member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
 
     override this.Program =
-        let update = update this.HttpClient
-        Program.mkProgram init update render
-        |> Program.withRouter router
-        #if DEBUG
-        |> Program.withConsoleTrace
-        #endif
+        let update = update (this.JSRuntime, this.HttpClient, this.Snackbar)
+        let program =
+            Program.mkProgram init update render
+            |> Program.withRouter router
+            #if DEBUG
+            |> Program.withConsoleTrace
+            #endif
+        program

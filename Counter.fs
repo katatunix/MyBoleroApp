@@ -24,10 +24,12 @@ let update msg model =
         match msg with
         | Inc -> { model with Count = model.Count + 1 }
         | Dec -> { model with Count = model.Count - 1 }
+
     let intent =
-        if random.Next() % 50 = 0
+        if Common.random.Next() % 50 = 0
         then NavigateToHome
         else Nope
+
     model, intent
 
 let render homeUrl model dispatch =

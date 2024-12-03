@@ -1,24 +1,40 @@
 module MyBoleroApp.RandomPicture
 
+open System.Net.Http
 open Bolero.Html
+open Elmish
 open Microsoft.AspNetCore.Components.Sections
+open Microsoft.JSInterop
 open MudBlazor
 open Bolero.MudBlazor
+open MyBoleroApp.Components
 
 type Model =
-    { Nonce: int }
+    { LoadingImage: LoadingImage.Model }
 
 type Msg =
-    | Prev
     | Next
+    | ImageMsg of LoadingImage.Msg
 
+let [<Literal>] private Url =
+    // "https://pic.re/image"
+    "https://picsum.photos/2000/1200"
 
-let init () = { Nonce = 0 }
+let init (js: IJSRuntime, http: HttpClient) =
+    let m, cmd = LoadingImage.init (js, http) Url
+    { LoadingImage = m }, cmd |> Cmd.map ImageMsg
 
-let update msg model =
+let update (js, http) msg model =
     match msg with
-    | Prev -> { model with Nonce = model.Nonce - 1 }
-    | Next -> { model with Nonce = model.Nonce + 1 }
+    | Next ->
+        let m, cmd = model.LoadingImage |> LoadingImage.update (js, http) LoadingImage.Msg.StartLoad
+        { model with LoadingImage = m }, cmd |> Cmd.map ImageMsg
+    | ImageMsg msg ->
+        let m, cmd = model.LoadingImage |> LoadingImage.update (js, http) msg
+        { model with LoadingImage = m }, cmd |> Cmd.map ImageMsg
+
+let dispose model =
+    model.LoadingImage |> LoadingImage.dispose
 
 let render model dispatch =
     concat {
@@ -30,23 +46,14 @@ let render model dispatch =
             }
         }
         comp<MudStack> {
-            comp<MudImage> {
-                attr.Src $"https://picsum.photos/2000/1200?random={model.Nonce}"
-                attr.ObjectFit ObjectFit.Cover
-                attr.Class "rounded-lg"
-            }
-            comp<MudButtonGroup> {
-                attr.Variant Variant.Outlined
+            LoadingImage.render model.LoadingImage
+            comp<MudButton> {
+                attr.Variant Variant.Filled
                 attr.Color Color.Primary
-                attr.style "margin:auto"
-                comp<MudButton> {
-                    on.click (fun _ -> dispatch Prev)
-                    "Prev"
-                }
-                comp<MudButton> {
-                    on.click (fun _ -> dispatch Next)
-                    "Next"
-                }
+                attr.disabled model.LoadingImage.State.IsLoading
+                // attr.style "margin: auto"
+                on.click (fun _ -> dispatch Next)
+                "Next"
             }
         }
     }

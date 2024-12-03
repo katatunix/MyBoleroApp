@@ -26,6 +26,7 @@ module attr =
     let ButtonType (value: ButtonType) = Attr.Make "ButtonType" value
     let StartIcon (value: string) = Attr.Make "StartIcon" value
     let EndIcon (value: string) = Attr.Make "EndIcon" value
+    let Indeterminate (value: bool) = Attr.Make "Indeterminate" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action

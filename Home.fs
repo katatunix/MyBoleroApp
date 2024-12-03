@@ -16,12 +16,12 @@ let render () =
         }
         comp<MudStack> {
             for _ = 1 to 10 do
-            comp<MudPaper> {
-                attr.Class "pa-4"
-                comp<MudText> {
-                    attr.style "font-family:monospace"
-                    System.Guid.NewGuid().ToString()
+                comp<MudPaper> {
+                    attr.Class "pa-4"
+                    comp<MudText> {
+                        attr.style "font-family: monospace"
+                        System.Guid.NewGuid().ToString()
+                    }
                 }
-            }
         }
     }
