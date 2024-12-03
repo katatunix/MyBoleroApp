@@ -56,43 +56,37 @@ let update (js: IJSRuntime, http: HttpClient, snackbar: ISnackbar) msg model =
         | _ -> model
 
     match model.CurrentPage, msg with
-    | RandomPicture m, UrlChanged url when not url.IsRandomPicture -> m |> RandomPicture.dispose
-    | _ -> ()
+    | RandomPicture m, UrlChanged url when url.IsRandomPicture|>not ->
+        m |> RandomPicture.dispose
+    | _ ->
+        ()
 
     match msg, model.CurrentPage with
     | UrlChanged Url.NotFound, _ ->
         { model with CurrentPage = NotFound }, Cmd.none
 
-    | UrlChanged Url.Home, Home ->
-        model, Cmd.none
     | UrlChanged Url.Home, _ ->
         { model with CurrentPage = Home }, Cmd.none
 
-    | UrlChanged (Url.Counter _), Counter _ ->
-        model, Cmd.none
-    | UrlChanged (Url.Counter start), _ ->
+    | UrlChanged (Url.Counter start), page when page.IsCounter|>not ->
         { model with CurrentPage = Counter (Counter.init start) }, Cmd.none
 
-    | UrlChanged Url.RandomPicture, RandomPicture _ ->
-        model, Cmd.none
-    | UrlChanged Url.RandomPicture, _ ->
+    | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
         let m, cmd = RandomPicture.init (js, http)
         { model with CurrentPage = RandomPicture m }, cmd |> Cmd.map RandomPictureMsg
 
-    | UrlChanged Url.PeicResult, PeicResult ->
-        model, Cmd.none
     | UrlChanged Url.PeicResult, _ ->
         { model with CurrentPage = PeicResult }, Cmd.none
 
     | SetDarkMode value, _ ->
+        snackbar.Add($"SetDarkMode: {value} {System.DateTime.Now}", Severity.Success) |> ignore
         { model with IsDarkMode = value }, Cmd.none
 
     | SetMenuOpen value, _ ->
         { model with IsMenuOpen = value }, Cmd.none
 
     | ToggleMenuOpen, _ ->
-        snackbar.Add($"ToggleMenuOpen {System.DateTime.Now}", Severity.Success)  |>ignore
-        { model with IsMenuOpen = not model.IsMenuOpen }, Cmd.none
+        { model with IsMenuOpen = model.IsMenuOpen|>not }, Cmd.none
 
     | CounterMsg msg, Counter m ->
         match Counter.update msg m with
@@ -219,10 +213,9 @@ type App() =
 
     override this.Program =
         let update = update (this.JSRuntime, this.HttpClient, this.Snackbar)
-        let program =
-            Program.mkProgram init update render
-            |> Program.withRouter router
-            #if DEBUG
-            |> Program.withConsoleTrace
-            #endif
-        program
+
+        Program.mkProgram init update render
+        |> Program.withRouter router
+        #if DEBUG
+        |> Program.withConsoleTrace
+        #endif

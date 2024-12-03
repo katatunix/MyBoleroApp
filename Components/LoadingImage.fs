@@ -15,6 +15,7 @@ type State =
 type Model =
     { Url: string
       State: State }
+    member this.IsLoading = this.State.IsLoading
 
 type Msg =
     | StartLoad
@@ -24,8 +25,11 @@ let private loadCmd (js: IJSRuntime, http: HttpClient) (imageUrl: string) =
     Cmd.OfTask.either
         (fun imageUrl -> task {
             use! stream =
-                http.GetStreamAsync(imageUrl: string)
-                // failwith "Something went wrong"
+                if random.Next() % 2 = 0 then
+                    http.GetStreamAsync(imageUrl: string)
+                else
+                    failwith "Something went wrong"
+            printfn "%d KB" (stream.Length/1024L)
             use streamRef = new DotNetStreamReference(stream)
             return! js.InvokeAsync<string>("makeUrl", streamRef)
         })
@@ -37,7 +41,7 @@ let private loadCmd (js: IJSRuntime, http: HttpClient) (imageUrl: string) =
         )
         (fun ex -> EndLoad (Error ex.Message))
 
-let init (js: IJSRuntime, http: HttpClient) (url: string) =
+let init (js, http) url =
     { Url = url
       State = Loading },
     loadCmd (js, http) url
@@ -46,11 +50,10 @@ let private disposeResult = function
     | Ok (_, dispose) -> dispose()
     | _ -> ()
 
-let update (js: IJSRuntime, http: HttpClient) msg model =
+let update (js, http) msg model =
     match msg, model.State with
     | StartLoad, Loading ->
         model, Cmd.none
-
     | StartLoad, Done result ->
         disposeResult result
         { model with State = Loading }, loadCmd (js, http) model.Url

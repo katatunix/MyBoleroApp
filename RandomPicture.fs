@@ -10,7 +10,7 @@ open Bolero.MudBlazor
 open MyBoleroApp.Components
 
 type Model =
-    { LoadingImage: LoadingImage.Model }
+    { Image: LoadingImage.Model }
 
 type Msg =
     | Next
@@ -22,19 +22,19 @@ let [<Literal>] private Url =
 
 let init (js: IJSRuntime, http: HttpClient) =
     let m, cmd = LoadingImage.init (js, http) Url
-    { LoadingImage = m }, cmd |> Cmd.map ImageMsg
+    { Image = m }, cmd |> Cmd.map ImageMsg
 
 let update (js, http) msg model =
     match msg with
     | Next ->
-        let m, cmd = model.LoadingImage |> LoadingImage.update (js, http) LoadingImage.Msg.StartLoad
-        { model with LoadingImage = m }, cmd |> Cmd.map ImageMsg
+        let m, cmd = model.Image |> LoadingImage.update (js, http) LoadingImage.Msg.StartLoad
+        { model with Image = m }, cmd |> Cmd.map ImageMsg
     | ImageMsg msg ->
-        let m, cmd = model.LoadingImage |> LoadingImage.update (js, http) msg
-        { model with LoadingImage = m }, cmd |> Cmd.map ImageMsg
+        let m, cmd = model.Image |> LoadingImage.update (js, http) msg
+        { model with Image = m }, cmd |> Cmd.map ImageMsg
 
 let dispose model =
-    model.LoadingImage |> LoadingImage.dispose
+    model.Image |> LoadingImage.dispose
 
 let clean msg =
     match msg with
@@ -51,12 +51,11 @@ let render model dispatch =
             }
         }
         comp<MudStack> {
-            LoadingImage.render model.LoadingImage
+            LoadingImage.render model.Image
             comp<MudButton> {
                 attr.Variant Variant.Filled
                 attr.Color Color.Primary
-                attr.disabled model.LoadingImage.State.IsLoading
-                // attr.style "margin: auto"
+                attr.disabled model.Image.IsLoading
                 on.click (fun _ -> dispatch Next)
                 "Next"
             }
