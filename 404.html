@@ -29,6 +29,18 @@
 </div>
 <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+<script>
+  async function makeUrl(stream) {
+    const arrayBuffer = await stream.arrayBuffer();
+    const blob = new Blob([arrayBuffer]);
+    return URL.createObjectURL(blob);
+  }
+
+  async function revokeUrl(url) {
+    URL.revokeObjectURL(url);
+  }
+</script>
     <script src="brotliloader.min.js" type="module"></script>
 </body>
 </html>
