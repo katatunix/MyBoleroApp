@@ -36,6 +36,11 @@ let update (js, http) msg model =
 let dispose model =
     model.LoadingImage |> LoadingImage.dispose
 
+let clean msg =
+    match msg with
+    | ImageMsg msg -> LoadingImage.clean msg
+    | _ -> ()
+
 let render model dispatch =
     concat {
         comp<SectionContent> {

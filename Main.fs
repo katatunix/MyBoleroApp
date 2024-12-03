@@ -106,6 +106,10 @@ let update (js: IJSRuntime, http: HttpClient, snackbar: ISnackbar) msg model =
         { model with CurrentPage = RandomPicture m },
         cmd |> Cmd.map RandomPictureMsg
 
+    | RandomPictureMsg msg, _ ->
+        RandomPicture.clean msg
+        model, Cmd.none
+
     | _ ->
         model, Cmd.none
 

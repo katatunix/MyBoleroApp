@@ -42,25 +42,33 @@ let init (js: IJSRuntime, http: HttpClient) (url: string) =
       State = Loading },
     loadCmd (js, http) url
 
+let private disposeResult = function
+    | Ok (_, dispose) -> dispose()
+    | _ -> ()
+
 let update (js: IJSRuntime, http: HttpClient) msg model =
     match msg, model.State with
     | StartLoad, Loading ->
         model, Cmd.none
 
     | StartLoad, Done result ->
-        match result with
-        | Ok (_, dispose) -> dispose()
-        | _ -> ()
+        disposeResult result
         { model with State = Loading }, loadCmd (js, http) model.Url
 
     | EndLoad result, Loading ->
         { model with State = Done result }, Cmd.none
-    | EndLoad _, Done _ ->
+    | EndLoad _, Done result ->
+        disposeResult result
         model, Cmd.none
 
 let dispose model =
     match model.State with
-    | Done (Ok (_, dispose)) -> dispose()
+    | Done result -> disposeResult result
+    | _ -> ()
+
+let clean msg =
+    match msg with
+    | EndLoad result -> disposeResult result
     | _ -> ()
 
 let render model =
