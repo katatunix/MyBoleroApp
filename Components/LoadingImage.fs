@@ -82,6 +82,8 @@ let render model =
         comp<MudProgressLinear> {
             attr.Indeterminate true
             attr.Color Color.Primary
+            attr.Size Size.Medium
+            attr.Rounded true
         }
     | Done (Ok data) ->
         comp<MudImage> {
