@@ -83,7 +83,14 @@ let render model dispatch =
             comp<MudStack> {
                 attr.Row true
                 attr.Justify Justify.Center
+                attr.AlignItems AlignItems.Center
                 btn "Prev" Prev
+                comp<MudText> {
+                    attr.Color Color.Primary
+                    attr.style "font-family: monospace"
+                    attr.Typo Typo.subtitle2
+                    string model.Seed
+                }
                 btn "Next" Next
             }
         }
