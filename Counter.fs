@@ -32,7 +32,7 @@ let update msg model =
 
     model, intent
 
-let render homeUrl model dispatch =
+let render model dispatch =
     concat {
         comp<SectionContent> {
             attr.SectionName "Title"
@@ -44,7 +44,7 @@ let render homeUrl model dispatch =
         comp<MudStack> {
             comp<MudText> {
                 attr.Typo Typo.h4
-                attr.Color Color.Success
+                attr.Color Color.Inherit
                 attr.style "font-family:monospace"
                 string model.Count
             }
@@ -63,9 +63,5 @@ let render homeUrl model dispatch =
                     "Decrease"
                 }
             }
-            // comp<MudLink> {
-            //     attr.Href homeUrl
-            //     "Back to Home"
-            // }
         }
     }

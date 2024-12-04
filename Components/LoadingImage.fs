@@ -10,7 +10,7 @@ open MyBoleroApp.Common
 
 type Data =
     { BlobUrl: string
-      Length: int64
+      SizeInBytes: int64
       LoadingTime: TimeSpan }
 
 type State =
@@ -21,6 +21,10 @@ type Model =
     { Url: string
       State: State }
     member this.IsLoading = this.State.IsLoading
+    member this.Data =
+        match this.State with
+        | Done (Ok data) -> Some data
+        | _ -> None
 
 type Msg =
     | StartLoad of url: string
@@ -33,7 +37,7 @@ let private loadCmd (imageUrl: string) =
             use! stream = Http.getStream imageUrl
             let length = stream.Length
             let! blobUrl = JS.makeUrl stream
-            return { BlobUrl = blobUrl; Length = length; LoadingTime = DateTime.Now - start }
+            return { BlobUrl = blobUrl; SizeInBytes = length; LoadingTime = DateTime.Now - start }
         })
         imageUrl
         (Ok >> EndLoad)
@@ -77,25 +81,14 @@ let render model =
     | Loading ->
         comp<MudProgressLinear> {
             attr.Indeterminate true
+            attr.Color Color.Primary
         }
     | Done (Ok data) ->
-        comp<MudStack> {
-            comp<MudImage> {
-                attr.Src data.BlobUrl
-                attr.ObjectFit ObjectFit.Cover
-                attr.Class "rounded"
-                on.load (fun _ -> JS.revokeUrl data.BlobUrl |> Async.StartImmediate)
-            }
-            comp<MudStack> {
-                attr.Row true
-                attr.Justify Justify.Center
-                comp<MudText> {
-                    attr.Color Color.Secondary
-                    attr.Typo Typo.subtitle2
-                    attr.style "font-family: monospace"
-                    $"{data.Length/1024L} KB (%.2f{data.LoadingTime.TotalSeconds}s)"
-                }
-            }
+        comp<MudImage> {
+            attr.Src data.BlobUrl
+            attr.ObjectFit ObjectFit.Cover
+            attr.Class "rounded"
+            on.load (fun _ -> JS.revokeUrl data.BlobUrl |> Async.StartImmediate)
         }
     | Done (Error text) ->
         comp<MudText> {

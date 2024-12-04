@@ -11,4 +11,7 @@ let makeUrl (stream: System.IO.Stream) =
     }
 
 let revokeUrl (url: string) =
+    #if DEBUG
+    printfn "JS.revokeUrl: %s" url
+    #endif
     runtime.InvokeVoidAsync("revokeUrl", url).AsTask() |> Async.AwaitTask

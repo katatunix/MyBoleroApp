@@ -177,7 +177,7 @@ let render model dispatch =
         | Home ->
             Home.render ()
         | Counter m ->
-            Counter.render (router.Link Url.Home) m (CounterMsg >> dispatch)
+            Counter.render m (CounterMsg >> dispatch)
         | RandomPicture m ->
             RandomPicture.render m (RandomPictureMsg >> dispatch)
         | PeicResult ->
