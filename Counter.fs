@@ -50,6 +50,7 @@ let render model dispatch =
             }
             comp<MudStack> {
                 attr.Row true
+                attr.Justify Justify.FlexStart
                 comp<MudButton> {
                     attr.Variant Variant.Filled
                     attr.Color Color.Primary
