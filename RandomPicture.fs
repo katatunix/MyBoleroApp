@@ -75,7 +75,7 @@ let render model dispatch =
                 comp<MudButton> {
                     attr.Variant Variant.Filled
                     attr.Color Color.Primary
-                    attr.disabled model.Image.IsLoading
+                    attr.Disabled model.Image.IsLoading
                     on.click (fun _ -> dispatch msg)
                     text
                 }

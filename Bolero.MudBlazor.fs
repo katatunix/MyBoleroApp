@@ -29,6 +29,7 @@ module attr =
     let Indeterminate (value: bool) = Attr.Make "Indeterminate" value
     let Justify (value: Justify) = Attr.Make "Justify" value
     let Rounded (value: bool) = Attr.Make "Rounded" value
+    let Disabled (value: bool) = Attr.Make "Disabled" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action

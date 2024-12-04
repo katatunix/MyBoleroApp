@@ -51,18 +51,18 @@ let render model dispatch =
             comp<MudStack> {
                 attr.Row true
                 attr.Justify Justify.FlexStart
-                comp<MudButton> {
-                    attr.Variant Variant.Filled
-                    attr.Color Color.Primary
-                    on.click (fun _ -> dispatch Inc)
-                    "Increase"
-                }
-                comp<MudButton> {
-                    attr.Variant Variant.Filled
-                    attr.Color Color.Secondary
-                    on.click (fun _ -> dispatch Dec)
-                    "Decrease"
-                }
+
+                let btn (text: string) color msg =
+                    comp<MudButton> {
+                        attr.Variant Variant.Filled
+                        attr.Color color
+                        attr.Disabled false
+                        on.click (fun _ -> dispatch msg)
+                        text
+                    }
+
+                btn "Increase" Color.Primary Inc
+                btn "Decrease" Color.Secondary Dec
             }
         }
     }
