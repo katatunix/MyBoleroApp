@@ -38,7 +38,7 @@ let private loadCmd (imageUrl: string) =
             let start = DateTime.Now
             use! stream = Http.getStream imageUrl
             let length = stream.Length
-            let! blobUrl = Js.createUrl stream
+            let! blobUrl = JavaScript.createUrl stream
             return { BlobUrl = blobUrl
                      SizeInBytes = length
                      LoadingTime = DateTime.Now - start }
@@ -53,7 +53,7 @@ let init url =
     loadCmd url
 
 let private jsRevokeUrl url =
-    Js.revokeUrl url |> Async.StartImmediate
+    JavaScript.revokeUrl url |> Async.StartImmediate
 
 let private revoke = function
     | Ok data -> jsRevokeUrl data.BlobUrl

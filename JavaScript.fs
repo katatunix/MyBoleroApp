@@ -1,4 +1,4 @@
-module MyBoleroApp.Js
+module MyBoleroApp.JavaScript
 
 open Microsoft.JSInterop
 

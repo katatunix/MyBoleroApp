@@ -211,7 +211,7 @@ type App() =
     member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
 
     override this.Program =
-        Js.runtime <- this.JSRuntime
+        JavaScript.runtime <- this.JSRuntime
         Http.client <- this.HttpClient
 
         Program.mkProgram init (update this.Snackbar) render
