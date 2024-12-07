@@ -32,15 +32,14 @@ let update msg model =
         model, Cmd.none
     | Next | Prev ->
         let index = model.Index + (if msg = Next then 1 else -1)
-        let imageModel, imageCmd =
+        let m, cmd =
             model.Image |> Image.update (Image.Msg.StartLoad (makeUrl index))
-        { model with Index = index; Image = imageModel },
-        imageCmd |> Cmd.map ImageMsg
+        { model with Index = index; Image = m },
+        cmd |> Cmd.map ImageMsg
 
     | ImageMsg msg ->
-        let imageModel, imageCmd = model.Image |> Image.update msg
-        { model with Image = imageModel },
-        imageCmd |> Cmd.map ImageMsg
+        let m, cmd = model.Image |> Image.update msg
+        { model with Image = m }, cmd |> Cmd.map ImageMsg
 
 let dispose model =
     model.Image |> Image.dispose
@@ -63,7 +62,7 @@ let render model dispatch =
                     attr.Color Color.Secondary
                     attr.Typo Typo.subtitle2
                     attr.style "font-family: monospace"
-                    $"{data.SizeInBytes/1024L}KB (%.2f{data.LoadingTime.TotalSeconds}s)"
+                    $"{data.SizeInBytes/1024L} KB (%.2f{data.LoadingTime.TotalSeconds}s)"
                 }
             }
         | None ->
@@ -86,6 +85,7 @@ let render model dispatch =
             comp<MudText> {
                 attr.style "font-family: monospace"
                 attr.Typo Typo.subtitle2
+                attr.Color Color.Success
                 string model.Index
             }
             button "Next" Next
