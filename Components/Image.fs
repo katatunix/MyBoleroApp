@@ -6,7 +6,6 @@ open Bolero
 open Bolero.Html
 open MudBlazor
 open MyBoleroApp
-open MyBoleroApp.Common
 
 type Data =
     { BlobUrl: string
@@ -14,7 +13,7 @@ type Data =
       LoadingTime: TimeSpan }
 
 type State =
-    | Loading
+    | Loading of Guid
     | Done of Result<Data, string>
 
 type Model =
@@ -30,9 +29,9 @@ type Model =
 
 type Msg =
     | StartLoad of url: string
-    | EndLoad of Result<Data, string>
+    | EndLoad of Guid * Result<Data, string>
 
-let private loadCmd (imageUrl: string) =
+let private loadCmd guid (imageUrl: string) =
     Cmd.OfAsync.either
         (fun imageUrl -> async {
             let start = DateTime.Now
@@ -44,13 +43,14 @@ let private loadCmd (imageUrl: string) =
                      LoadingTime = DateTime.Now - start }
         })
         imageUrl
-        (Ok >> EndLoad)
-        (exnMsg >> Error >> EndLoad)
+        (fun data -> EndLoad (guid, Ok data))
+        (fun ex -> EndLoad (guid, Error ex.Message))
 
 let init url =
+    let guid = Guid.NewGuid()
     { Url = url
-      State = Loading },
-    loadCmd url
+      State = Loading guid },
+    loadCmd guid url
 
 let private jsRevokeUrl url =
     JavaScript.revokeUrl url |> Async.StartImmediate
@@ -61,15 +61,19 @@ let private revoke = function
 
 let update msg model =
     match msg, model.State with
-    | StartLoad _, Loading ->
+    | StartLoad _, Loading _ ->
         model, Cmd.none
+
     | StartLoad url, Done result ->
         revoke result
-        { model with Url = url; State = Loading }, loadCmd url
+        let guid = Guid.NewGuid()
+        { model with Url = url; State = Loading guid },
+        loadCmd guid url
 
-    | EndLoad result, Loading ->
+    | EndLoad (guid, result), Loading guid' when guid = guid' ->
         { model with State = Done result }, Cmd.none
-    | EndLoad result, Done _ ->
+
+    | EndLoad (_, result), _ ->
         revoke result
         model, Cmd.none
 
@@ -80,12 +84,12 @@ let dispose model =
 
 let clean msg =
     match msg with
-    | EndLoad result -> revoke result
+    | EndLoad (_, result) -> revoke result
     | _ -> ()
 
 let render model =
     match model.State with
-    | Loading ->
+    | Loading _ ->
         comp<MudProgressLinear> {
             attr.Indeterminate true
             attr.Color Color.Primary

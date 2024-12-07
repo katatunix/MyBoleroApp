@@ -15,8 +15,8 @@ type Intent =
     | Nope
     | NavigateToHome
 
-let init start =
-    { Count = start |> Option.defaultValue 0 }
+let init () =
+    { Count = 0 }
 
 let update msg model =
     let model =
@@ -24,10 +24,7 @@ let update msg model =
         | Increase -> { model with Count = model.Count + 1 }
         | Decrease -> { model with Count = model.Count - 1 }
 
-    let intent =
-        if Common.random.Next() % 50 = 25
-        then NavigateToHome
-        else Nope
+    let intent = if random.Next() % 50 = 25 then NavigateToHome else Nope
 
     model, intent
 

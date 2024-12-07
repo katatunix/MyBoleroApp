@@ -12,14 +12,14 @@ open MudBlazor
 type Url =
     | NotFound
     | [<EndPoint "/">] Home
-    | [<EndPoint "/counter?{start}">] Counter of start: int option
+    | [<EndPoint "/counter">] Counter
     | [<EndPoint "/random-picture">] RandomPicture
     | [<EndPoint "/peic-result">] PeicResult
 
 type Page =
     | NotFound
     | Home
-    | Counter of Counter.Model
+    | Counter
     | RandomPicture of RandomPicture.Model
     | PeicResult
 
@@ -27,6 +27,7 @@ type Model =
     { CurrentUrl: Url
       IsDarkMode: bool
       IsMenuOpen: bool
+      Counter: Counter.Model option
       CurrentPage: Page }
 
 type Msg =
@@ -45,6 +46,7 @@ let init _ =
     { CurrentUrl = Url.Home
       IsDarkMode = true
       IsMenuOpen = true
+      Counter = None
       CurrentPage = Home },
     Cmd.none
 
@@ -67,8 +69,9 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Home, _ ->
         { model with CurrentPage = Home }, Cmd.none
 
-    | UrlChanged (Url.Counter start), page when page.IsCounter|>not ->
-        { model with CurrentPage = Counter (Counter.init start) }, Cmd.none
+    | UrlChanged Url.Counter, page when page.IsCounter|>not ->
+        let counterModel = model.Counter |> Option.defaultWith Counter.init
+        { model with CurrentPage = Counter; Counter = Some counterModel }, Cmd.none
 
     | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
         let m, cmd = RandomPicture.init ()
@@ -78,7 +81,6 @@ let update (_snackbar: ISnackbar) msg model =
         { model with CurrentPage = PeicResult }, Cmd.none
 
     | SetDarkMode value, _ ->
-        // snackbar.Add($"SetDarkMode: {value} {System.DateTime.Now}", Severity.Success) |> ignore
         { model with IsDarkMode = value }, Cmd.none
 
     | SetMenuOpen value, _ ->
@@ -87,12 +89,18 @@ let update (_snackbar: ISnackbar) msg model =
     | ToggleMenuOpen, _ ->
         { model with IsMenuOpen = model.IsMenuOpen|>not }, Cmd.none
 
-    | CounterMsg msg, Counter m ->
-        match Counter.update msg m with
-        | m, Counter.Nope ->
-            { model with CurrentPage = Counter m }, Cmd.none
-        | _, Counter.NavigateToHome ->
-            { model with CurrentUrl = Url.Home; CurrentPage = Home }, Cmd.none
+    | CounterMsg msg, _ ->
+        match model.Counter with
+        | Some counterModel ->
+            let counterModel, intent = counterModel |> Counter.update msg
+            let model = { model with Counter = Some counterModel }
+            match intent with
+            | Counter.Intent.Nope ->
+                model, Cmd.none
+            | Counter.Intent.NavigateToHome ->
+                { model with CurrentUrl = Url.Home; CurrentPage = Home }, Cmd.none
+        | None ->
+            model, Cmd.none
 
     | RandomPictureMsg msg, RandomPicture m ->
         let m, cmd = m |> RandomPicture.update msg
@@ -110,11 +118,13 @@ let render model dispatch =
     let title, page =
         match model.CurrentPage with
         | NotFound ->
-            "NotFound", NotFound.render ()
+            "Not Found", NotFound.render ()
         | Home ->
             "Home", Home.render ()
-        | Counter m ->
-            "Counter", Counter.render m (CounterMsg >> dispatch)
+        | Counter ->
+            match model.Counter with
+            | Some counterModel -> "Counter", Counter.render counterModel (CounterMsg >> dispatch)
+            | None -> bug ()
         | RandomPicture m ->
             "Random Picture", RandomPicture.render m (RandomPictureMsg >> dispatch)
         | PeicResult ->
@@ -165,7 +175,7 @@ let render model dispatch =
                     "Home"
                 }
                 comp<MudNavLink> {
-                    router.HRef (Url.Counter None)
+                    router.HRef Url.Counter
                     attr.Match NavLinkMatch.All
                     "Counter"
                 }
