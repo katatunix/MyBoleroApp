@@ -3,11 +3,10 @@ module MyBoleroApp.Main
 open System.Net.Http
 open Microsoft.AspNetCore.Components
 open Microsoft.AspNetCore.Components.Routing
-open Microsoft.AspNetCore.Components.Sections
+open Microsoft.JSInterop
 open Elmish
 open Bolero
 open Bolero.Html
-open Microsoft.JSInterop
 open MudBlazor
 
 type Url =
@@ -49,7 +48,7 @@ let init _ =
       CurrentPage = Home },
     Cmd.none
 
-let update (snackbar: ISnackbar) msg model =
+let update (_snackbar: ISnackbar) msg model =
     let model =
         match msg with
         | UrlChanged url -> { model with CurrentUrl = url }
@@ -57,7 +56,7 @@ let update (snackbar: ISnackbar) msg model =
 
     match model.CurrentPage, msg with
     | RandomPicture m, UrlChanged url when url.IsRandomPicture|>not ->
-        m |> RandomPicture.dispose
+        RandomPicture.dispose m
     | _ ->
         ()
 
@@ -79,7 +78,7 @@ let update (snackbar: ISnackbar) msg model =
         { model with CurrentPage = PeicResult }, Cmd.none
 
     | SetDarkMode value, _ ->
-        snackbar.Add($"SetDarkMode: {value} {System.DateTime.Now}", Severity.Success) |> ignore
+        // snackbar.Add($"SetDarkMode: {value} {System.DateTime.Now}", Severity.Success) |> ignore
         { model with IsDarkMode = value }, Cmd.none
 
     | SetMenuOpen value, _ ->
@@ -108,17 +107,30 @@ let update (snackbar: ISnackbar) msg model =
         model, Cmd.none
 
 let render model dispatch =
+    let title, page =
+        match model.CurrentPage with
+        | NotFound ->
+            "NotFound", NotFound.render ()
+        | Home ->
+            "Home", Home.render ()
+        | Counter m ->
+            "Counter", Counter.render m (CounterMsg >> dispatch)
+        | RandomPicture m ->
+            "Random Picture", RandomPicture.render m (RandomPictureMsg >> dispatch)
+        | PeicResult ->
+            "PEIC Result", PeicResult.render ()
+
     let appBar =
         comp<MudAppBar> {
             comp<MudIconButton> {
-                attr.Icon (if model.IsMenuOpen then Icons.Material.Filled.MenuOpen else Icons.Material.Filled.Menu)
+                attr.Icon (
+                    if model.IsMenuOpen then Icons.Material.Filled.MenuOpen
+                    else Icons.Material.Filled.Menu)
                 attr.Color Color.Inherit
                 attr.Edge Edge.Start
                 on.click (fun _ -> dispatch ToggleMenuOpen)
             }
-            comp<SectionOutlet> {
-                attr.SectionName "Title"
-            }
+            comp<MudText> { attr.Typo Typo.h5; title }
         }
 
     let sideBar =
@@ -140,8 +152,8 @@ let render model dispatch =
                     }
                     comp<MudSwitch<bool>> {
                         attr.label "Dark Mode"
-                        attr.Color Color.Primary
                         attr.value model.IsDarkMode
+                        attr.Color Color.Primary
                         on.ValueChanged (SetDarkMode >> dispatch)
                     }
                 }
@@ -154,7 +166,7 @@ let render model dispatch =
                 }
                 comp<MudNavLink> {
                     router.HRef (Url.Counter None)
-                    attr.Match NavLinkMatch.Prefix
+                    attr.Match NavLinkMatch.All
                     "Counter"
                 }
                 comp<MudNavLink> {
@@ -170,32 +182,19 @@ let render model dispatch =
             }
         }
 
-    let main =
-        match model.CurrentPage with
-        | NotFound ->
-            NotFound.render ()
-        | Home ->
-            Home.render ()
-        | Counter m ->
-            Counter.render m (CounterMsg >> dispatch)
-        | RandomPicture m ->
-            RandomPicture.render m (RandomPictureMsg >> dispatch)
-        | PeicResult ->
-            PeicResult.render ()
-
     concat {
         comp<MudThemeProvider> {
             attr.IsDarkMode model.IsDarkMode
         }
-        comp<MudSnackbarProvider>
+        comp<MudSnackbarProvider> {  }
         comp<MudLayout> {
             appBar
             sideBar
             comp<MudMainContent> {
                 comp<MudContainer> {
                     attr.MaxWidth MaxWidth.ExtraLarge
-                    attr.Class "py-5"
-                    main
+                    attr.Class "py-6"
+                    page
                 }
             }
         }
@@ -212,13 +211,11 @@ type App() =
     member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
 
     override this.Program =
-        JS.runtime <- this.JSRuntime
+        Js.runtime <- this.JSRuntime
         Http.client <- this.HttpClient
 
-        let update = update this.Snackbar
-
-        Program.mkProgram init update render
+        Program.mkProgram init (update this.Snackbar) render
         |> Program.withRouter router
-        #if DEBUG
+#if DEBUG
         |> Program.withConsoleTrace
-        #endif
+#endif

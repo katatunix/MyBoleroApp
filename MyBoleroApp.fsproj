@@ -10,12 +10,12 @@
   <ItemGroup>
     <Compile Include="Bolero.MudBlazor.fs" />
     <Compile Include="Common.fs" />
-    <Compile Include="JS.fs" />
+    <Compile Include="Js.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="Components\Hello.fs" />
     <Compile Include="Components\Goodbye.fs" />
     <Compile Include="Components\Prog.fs" />
-    <Compile Include="Components\LoadingImage.fs" />
+    <Compile Include="Components\Image.fs" />
     <Compile Include="NotFound.fs" />
     <Compile Include="Home.fs" />
     <Compile Include="Counter.fs" />

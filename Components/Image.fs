@@ -1,4 +1,4 @@
-module MyBoleroApp.Components.LoadingImage
+module MyBoleroApp.Components.Image
 
 open System
 open Elmish
@@ -20,7 +20,9 @@ type State =
 type Model =
     { Url: string
       State: State }
-    member this.IsLoading = this.State.IsLoading
+    member this.IsLoading =
+        this.State.IsLoading
+
     member this.Data =
         match this.State with
         | Done (Ok data) -> Some data
@@ -36,8 +38,10 @@ let private loadCmd (imageUrl: string) =
             let start = DateTime.Now
             use! stream = Http.getStream imageUrl
             let length = stream.Length
-            let! blobUrl = JS.makeUrl stream
-            return { BlobUrl = blobUrl; SizeInBytes = length; LoadingTime = DateTime.Now - start }
+            let! blobUrl = Js.createUrl stream
+            return { BlobUrl = blobUrl
+                     SizeInBytes = length
+                     LoadingTime = DateTime.Now - start }
         })
         imageUrl
         (Ok >> EndLoad)
@@ -48,8 +52,11 @@ let init url =
       State = Loading },
     loadCmd url
 
+let private jsRevokeUrl url =
+    Js.revokeUrl url |> Async.StartImmediate
+
 let private revoke = function
-    | Ok data -> JS.revokeUrl data.BlobUrl |> Async.StartImmediate
+    | Ok data -> jsRevokeUrl data.BlobUrl
     | _ -> ()
 
 let update msg model =
@@ -62,7 +69,7 @@ let update msg model =
 
     | EndLoad result, Loading ->
         { model with State = Done result }, Cmd.none
-    | EndLoad _, Done result ->
+    | EndLoad result, Done _ ->
         revoke result
         model, Cmd.none
 
@@ -90,11 +97,11 @@ let render model =
             attr.Src data.BlobUrl
             attr.ObjectFit ObjectFit.Cover
             attr.Class "rounded"
-            on.load (fun _ -> JS.revokeUrl data.BlobUrl |> Async.StartImmediate)
+            on.load (fun _ -> jsRevokeUrl data.BlobUrl)
         }
-    | Done (Error text) ->
+    | Done (Error str) ->
         comp<MudText> {
             attr.Color Color.Error
             attr.style "font-family: monospace"
-            text
+            str
         }
