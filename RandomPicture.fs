@@ -67,7 +67,7 @@ let render model dispatch =
                 }
             }
         | None ->
-            Html.empty()
+            Html.empty ()
 
         let button (text: string) msg =
             comp<MudButton> {
@@ -84,7 +84,6 @@ let render model dispatch =
             attr.AlignItems AlignItems.Center
             button "Prev" Prev
             comp<MudText> {
-                attr.Color Color.Primary
                 attr.style "font-family: monospace"
                 attr.Typo Typo.subtitle2
                 string model.Index
