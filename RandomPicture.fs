@@ -28,6 +28,8 @@ let init () =
 
 let update msg model =
     match msg with
+    | Next | Prev when model.Image.IsLoading ->
+        model, Cmd.none
     | Next | Prev ->
         let index = model.Index + (if msg = Next then 1 else -1)
         let imageModel, imageCmd =

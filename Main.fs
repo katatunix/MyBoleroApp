@@ -20,7 +20,7 @@ type Page =
     | NotFound
     | Home
     | Counter
-    | RandomPicture of RandomPicture.Model
+    | RandomPicture
     | PeicResult
 
 type Model =
@@ -28,6 +28,7 @@ type Model =
       IsDarkMode: bool
       IsMenuOpen: bool
       Counter: Counter.Model option
+      RandomPicture: RandomPicture.Model option
       CurrentPage: Page }
 
 type Msg =
@@ -47,6 +48,7 @@ let init _ =
       IsDarkMode = true
       IsMenuOpen = true
       Counter = None
+      RandomPicture = None
       CurrentPage = Home },
     Cmd.none
 
@@ -56,12 +58,6 @@ let update (_snackbar: ISnackbar) msg model =
         | UrlChanged url -> { model with CurrentUrl = url }
         | _ -> model
 
-    match model.CurrentPage, msg with
-    | RandomPicture m, UrlChanged url when url.IsRandomPicture|>not ->
-        RandomPicture.dispose m
-    | _ ->
-        ()
-
     match msg, model.CurrentPage with
     | UrlChanged Url.NotFound, _ ->
         { model with CurrentPage = NotFound }, Cmd.none
@@ -70,12 +66,16 @@ let update (_snackbar: ISnackbar) msg model =
         { model with CurrentPage = Home }, Cmd.none
 
     | UrlChanged Url.Counter, page when page.IsCounter|>not ->
-        let counterModel = model.Counter |> Option.defaultWith Counter.init
-        { model with CurrentPage = Counter; Counter = Some counterModel }, Cmd.none
+        let m = model.Counter |> Option.defaultWith Counter.init
+        { model with CurrentPage = Counter; Counter = Some m }, Cmd.none
 
     | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
-        let m, cmd = RandomPicture.init ()
-        { model with CurrentPage = RandomPicture m }, cmd |> Cmd.map RandomPictureMsg
+        let m, cmd =
+            match model.RandomPicture with
+            | None -> RandomPicture.init()
+            | Some m -> m, Cmd.none
+        { model with CurrentPage = RandomPicture; RandomPicture = Some m },
+        cmd |> Cmd.map RandomPictureMsg
 
     | UrlChanged Url.PeicResult, _ ->
         { model with CurrentPage = PeicResult }, Cmd.none
@@ -91,9 +91,9 @@ let update (_snackbar: ISnackbar) msg model =
 
     | CounterMsg msg, _ ->
         match model.Counter with
-        | Some counterModel ->
-            let counterModel, intent = counterModel |> Counter.update msg
-            let model = { model with Counter = Some counterModel }
+        | Some m ->
+            let m, intent = m |> Counter.update msg
+            let model = { model with Counter = Some m }
             match intent with
             | Counter.Intent.Nope ->
                 model, Cmd.none
@@ -102,14 +102,15 @@ let update (_snackbar: ISnackbar) msg model =
         | None ->
             model, Cmd.none
 
-    | RandomPictureMsg msg, RandomPicture m ->
-        let m, cmd = m |> RandomPicture.update msg
-        { model with CurrentPage = RandomPicture m },
-        cmd |> Cmd.map RandomPictureMsg
-
     | RandomPictureMsg msg, _ ->
-        RandomPicture.clean msg
-        model, Cmd.none
+        match model.RandomPicture with
+        | Some m ->
+            let m, cmd = m |> RandomPicture.update msg
+            { model with RandomPicture = Some m },
+            cmd |> Cmd.map RandomPictureMsg
+        | None ->
+            RandomPicture.clean msg
+            model, Cmd.none
 
     | _ ->
         model, Cmd.none
@@ -122,11 +123,9 @@ let render model dispatch =
         | Home ->
             "Home", Home.render ()
         | Counter ->
-            match model.Counter with
-            | Some counterModel -> "Counter", Counter.render counterModel (CounterMsg >> dispatch)
-            | None -> bug ()
-        | RandomPicture m ->
-            "Random Picture", RandomPicture.render m (RandomPictureMsg >> dispatch)
+            "Counter", Counter.render model.Counter.Value (CounterMsg >> dispatch)
+        | RandomPicture ->
+            "Random Picture", RandomPicture.render model.RandomPicture.Value (RandomPictureMsg >> dispatch)
         | PeicResult ->
             "PEIC Result", PeicResult.render ()
 
@@ -221,11 +220,11 @@ type App() =
     member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
 
     override this.Program =
-        JavaScript.runtime <- this.JSRuntime
+        Js.runtime <- this.JSRuntime
         Http.client <- this.HttpClient
 
         Program.mkProgram init (update this.Snackbar) render
         |> Program.withRouter router
 #if DEBUG
-        |> Program.withConsoleTrace
+        // |> Program.withConsoleTrace
 #endif

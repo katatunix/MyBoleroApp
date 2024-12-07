@@ -37,7 +37,7 @@ let private loadCmd guid (imageUrl: string) =
             let start = DateTime.Now
             use! stream = Http.getStream imageUrl
             let length = stream.Length
-            let! blobUrl = JavaScript.createUrl stream
+            let! blobUrl = Js.createUrl stream
             return { BlobUrl = blobUrl
                      SizeInBytes = length
                      LoadingTime = DateTime.Now - start }
@@ -52,11 +52,8 @@ let init url =
       State = Loading guid },
     loadCmd guid url
 
-let private jsRevokeUrl url =
-    JavaScript.revokeUrl url |> Async.StartImmediate
-
 let private revoke = function
-    | Ok data -> jsRevokeUrl data.BlobUrl
+    | Ok data -> Js.revokeUrl data.BlobUrl |> Async.StartImmediate
     | _ -> ()
 
 let update msg model =
@@ -101,7 +98,6 @@ let render model =
             attr.Src data.BlobUrl
             attr.ObjectFit ObjectFit.Cover
             attr.Class "rounded"
-            on.load (fun _ -> jsRevokeUrl data.BlobUrl)
         }
     | Done (Error str) ->
         comp<MudText> {
