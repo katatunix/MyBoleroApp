@@ -21,7 +21,7 @@ let private makeUrl (index: int) =
     $"https://picsum.photos/id/{index}/{width}/{height}"
 
 let init () =
-    let index = 250 + (random.Next 500)
+    let index = random.Next 1000
     let imageModel, imageCmd = Image.init (makeUrl index)
     { Index = index; Image = imageModel },
     imageCmd |> Cmd.map ImageMsg

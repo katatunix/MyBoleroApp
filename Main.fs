@@ -66,8 +66,12 @@ let update (_snackbar: ISnackbar) msg model =
         { model with CurrentPage = Home }, Cmd.none
 
     | UrlChanged Url.Counter, page when page.IsCounter|>not ->
-        let m = model.Counter |> Option.defaultWith Counter.init
-        { model with CurrentPage = Counter; Counter = Some m }, Cmd.none
+        let m, cmd =
+            match model.Counter with
+            | None -> Counter.init ()
+            | Some m -> m, Cmd.none
+        { model with CurrentPage = Counter; Counter = Some m },
+        cmd |> Cmd.map CounterMsg
 
     | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
         let m, cmd =
