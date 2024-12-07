@@ -9,14 +9,14 @@ let createUrl (stream: System.IO.Stream) =
         use streamRef = new DotNetStreamReference(stream)
         let! url = runtime.InvokeAsync<string>("makeUrl", streamRef).AsTask() |> Async.AwaitTask
 #if DEBUG
-        printfn "createUrl: %s" url
+        printfn "Js.createUrl: %s" url
 #endif
         return url
     }
 
 let revokeUrl (url: string) =
 #if DEBUG
-    printfn "revokeUrl: %s" url
+    printfn "Js.revokeUrl: %s" url
 #endif
     runtime.InvokeVoidAsync("revokeUrl", url).AsTask() |> Async.AwaitTask
 

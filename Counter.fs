@@ -22,8 +22,8 @@ type Intent =
 module private Storage =
     let private key = "count"
 
-    let save value =
-        value |> Js.LocalStorage.set key |> Async.StartImmediate
+    let save count =
+        count |> Js.LocalStorage.set key |> Async.StartImmediate
 
     let load () =
         async {

@@ -76,7 +76,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
         let m, cmd =
             match model.RandomPicture with
-            | None -> RandomPicture.init()
+            | None -> RandomPicture.init ()
             | Some m -> m, Cmd.none
         { model with CurrentPage = RandomPicture; RandomPicture = Some m },
         cmd |> Cmd.map RandomPictureMsg
@@ -113,8 +113,7 @@ let update (_snackbar: ISnackbar) msg model =
             { model with RandomPicture = Some m },
             cmd |> Cmd.map RandomPictureMsg
         | None ->
-            RandomPicture.clean msg
-            model, Cmd.none
+            bug ()
 
     | _ ->
         model, Cmd.none
@@ -172,26 +171,16 @@ let render model dispatch =
                 }
             }
             comp<MudNavMenu> {
-                comp<MudNavLink> {
-                    router.HRef Url.Home
-                    attr.Match NavLinkMatch.All
-                    "Home"
-                }
-                comp<MudNavLink> {
-                    router.HRef Url.Counter
-                    attr.Match NavLinkMatch.All
-                    "Counter"
-                }
-                comp<MudNavLink> {
-                    router.HRef Url.RandomPicture
-                    attr.Match NavLinkMatch.All
-                    "Random Picture"
-                }
-                comp<MudNavLink> {
-                    router.HRef Url.PeicResult
-                    attr.Match NavLinkMatch.All
-                    "PEIC Result"
-                }
+                let navLink (url: Url) (text: string) =
+                    comp<MudNavLink> {
+                        router.HRef url
+                        attr.Match NavLinkMatch.All
+                        text
+                    }
+                navLink Url.Home "Home"
+                navLink Url.Counter "Counter"
+                navLink Url.RandomPicture "Random Picture"
+                navLink Url.PeicResult "PEIC Result"
             }
         }
 
@@ -230,5 +219,5 @@ type App() =
         Program.mkProgram init (update this.Snackbar) render
         |> Program.withRouter router
 #if DEBUG
-        // |> Program.withConsoleTrace
+        |> Program.withConsoleTrace
 #endif

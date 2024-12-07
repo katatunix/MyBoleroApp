@@ -22,9 +22,9 @@ let private makeUrl (index: int) =
 
 let init () =
     let index = random.Next 1000
-    let imageModel, imageCmd = Image.init (makeUrl index)
-    { Index = index; Image = imageModel },
-    imageCmd |> Cmd.map ImageMsg
+    let m, cmd = Image.init (makeUrl index)
+    { Index = index; Image = m },
+    cmd |> Cmd.map ImageMsg
 
 let update msg model =
     match msg with
