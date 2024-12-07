@@ -41,13 +41,14 @@ let update msg model =
     let model =
         match msg, model with
         | EndLoad count, Loading -> Done count
-        | Increase, Done count -> Done (count + 1)
-        | Decrease, Done count -> Done (count - 1)
+        | (Increase | Decrease), Done count ->
+            let count = count + (if msg = Increase then 1 else -1)
+            Storage.save count
+            Done count
         | _ -> model
 
-    match model with Done count -> Storage.save count | _ -> ()
-
-    let intent = if random.Next() % 50 = 25 then NavigateToHome else Nope
+    let intent =
+        if random.Next() % 50 = 25 then NavigateToHome else Nope
 
     model, intent
 
@@ -68,7 +69,7 @@ let render model dispatch =
                 attr.Row true
                 attr.Justify Justify.FlexStart
 
-                let button (text: string) color msg =
+                let button (text: string) (color: Color) (msg: Msg) =
                     comp<MudButton> {
                         attr.Variant Variant.Filled
                         attr.Color color

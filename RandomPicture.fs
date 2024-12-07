@@ -41,14 +41,6 @@ let update msg model =
         let m, cmd = model.Image |> Image.update msg
         { model with Image = m }, cmd |> Cmd.map ImageMsg
 
-let dispose model =
-    model.Image |> Image.dispose
-
-let clean msg =
-    match msg with
-    | ImageMsg msg -> Image.clean msg
-    | _ -> ()
-
 let render model dispatch =
     comp<MudStack> {
         Image.render model.Image
