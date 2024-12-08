@@ -90,6 +90,6 @@ let render model =
     | Done (Error str) ->
         comp<MudText> {
             attr.Color Color.Error
-            attr.style "font-family: monospace"
+            attr.style "font-family: monospace; overflow-wrap: break-word"
             str
         }
