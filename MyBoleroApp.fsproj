@@ -26,8 +26,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Bolero" Version="0.24.37" />
-    <PackageReference Include="Bolero.Build" Version="0.24.37" />
+    <PackageReference Include="Bolero" Version="0.24.38" />
+    <PackageReference Include="Bolero.Build" Version="0.24.38" />
     <PackageReference Include="Elmish" Version="4.2.0" />
     <PackageReference Include="MudBlazor" Version="7.15.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
