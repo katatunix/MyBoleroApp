@@ -8,7 +8,7 @@ open MudBlazor
 open MyBoleroApp
 
 type Data =
-    { BlobUrl: string
+    { BlobUrl: Js.URL
       SizeInBytes: int64
       LoadingTime: TimeSpan }
 
@@ -51,8 +51,8 @@ let init url =
       State = Loading },
     loadCmd url
 
-let private revoke = function
-    | Ok data -> Js.revokeUrl data.BlobUrl |> Async.StartImmediate
+let private dispose = function
+    | Ok data -> data.BlobUrl.Dispose()
     | _ -> ()
 
 let update msg model =
@@ -61,7 +61,7 @@ let update msg model =
         model, Cmd.none
 
     | StartLoad url, Done result ->
-        revoke result
+        dispose result
         { model with Url = url; State = Loading },
         loadCmd url
 
@@ -69,7 +69,7 @@ let update msg model =
         { model with State = Done result }, Cmd.none
 
     | EndLoad result, _ ->
-        revoke result
+        dispose result
         model, Cmd.none
 
 let render model =
@@ -83,7 +83,7 @@ let render model =
         }
     | Done (Ok data) ->
         comp<MudImage> {
-            attr.Src data.BlobUrl
+            attr.Src data.BlobUrl.Value
             attr.ObjectFit ObjectFit.Cover
             attr.Class "rounded"
         }

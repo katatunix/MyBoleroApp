@@ -1,8 +1,24 @@
 module MyBoleroApp.Js
 
+open System
 open Microsoft.JSInterop
 
 let mutable runtime : IJSRuntime = null
+
+let revokeUrl (url: string) =
+#if DEBUG
+    printfn "Js.revokeUrl: %s" url
+#endif
+    runtime.InvokeVoidAsync("revokeUrl", url).AsTask() |> Async.AwaitTask
+
+type URL (value: string) =
+    member this.Value = value
+    interface IDisposable with
+        member this.Dispose() = revokeUrl value |> Async.StartImmediate
+    member this.Dispose() =
+        (this:IDisposable).Dispose()
+    override this.ToString() =
+        value
 
 let createUrl (stream: System.IO.Stream) =
     async {
@@ -11,14 +27,8 @@ let createUrl (stream: System.IO.Stream) =
 #if DEBUG
         printfn "Js.createUrl: %s" url
 #endif
-        return url
+        return new URL(url)
     }
-
-let revokeUrl (url: string) =
-#if DEBUG
-    printfn "Js.revokeUrl: %s" url
-#endif
-    runtime.InvokeVoidAsync("revokeUrl", url).AsTask() |> Async.AwaitTask
 
 module LocalStorage =
     let set (key: string) value =
