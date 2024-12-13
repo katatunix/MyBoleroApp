@@ -90,6 +90,7 @@ let render model =
     | Done (Error str) ->
         comp<MudText> {
             attr.Color Color.Error
+            attr.Typo Typo.body1
             attr.style "font-family: monospace; overflow-wrap: break-word"
             str
         }
