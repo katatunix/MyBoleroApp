@@ -30,7 +30,10 @@ module attr =
     let Justify (value: Justify) = Attr.Make "Justify" value
     let Rounded (value: bool) = Attr.Make "Rounded" value
     let Disabled (value: bool) = Attr.Make "Disabled" value
+    let Label (value: string) = Attr.Make "Label" value
+    let Text (value: string) = Attr.Make "Text" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action
     let ValueChanged action = attr.callback "ValueChanged" action
+    let TextChanged action = attr.callback "TextChanged" action

@@ -65,7 +65,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Home, _ ->
         { model with CurrentPage = Home }, Cmd.none
 
-    | UrlChanged Url.Counter, page when page.IsCounter|>not ->
+    | UrlChanged Url.Counter, page when not page.IsCounter ->
         let m, cmd =
             match model.Counter with
             | None -> Counter.init ()
@@ -73,7 +73,7 @@ let update (_snackbar: ISnackbar) msg model =
         { model with CurrentPage = Counter; Counter = Some m },
         cmd |> Cmd.map CounterMsg
 
-    | UrlChanged Url.RandomPicture, page when page.IsRandomPicture|>not ->
+    | UrlChanged Url.RandomPicture, page when not page.IsRandomPicture ->
         let m, cmd =
             match model.RandomPicture with
             | None -> RandomPicture.init ()
@@ -91,7 +91,7 @@ let update (_snackbar: ISnackbar) msg model =
         { model with IsMenuOpen = value }, Cmd.none
 
     | ToggleMenuOpen, _ ->
-        { model with IsMenuOpen = model.IsMenuOpen|>not }, Cmd.none
+        { model with IsMenuOpen = not model.IsMenuOpen }, Cmd.none
 
     | CounterMsg msg, _ ->
         match model.Counter with

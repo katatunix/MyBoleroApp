@@ -13,12 +13,12 @@ let revokeUrl (url: string) =
 
 type URL (value: string) =
     member this.Value = value
+
     interface IDisposable with
         member this.Dispose() = revokeUrl value |> Async.StartImmediate
+
     member this.Dispose() =
         (this:IDisposable).Dispose()
-    override this.ToString() =
-        value
 
 let createUrl (stream: System.IO.Stream) =
     async {
