@@ -14,7 +14,7 @@ let render () =
 
     form {
         attr.action "http://dangkythi.ttngoaingutinhoc.hcm.edu.vn/tra-cuu-diem"
-        attr.method "POST"
+        attr.method "post"
         attr.target "_blank"
 
         hiddenInput "name"          "BUI PHUONG CHI"
