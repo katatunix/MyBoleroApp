@@ -26,9 +26,9 @@ let render () =
             attr.Row true
             attr.AlignItems AlignItems.Stretch
 
-            comp<MudTextField<string>> {
+            comp<MudTextField<int>> {
                 attr.name "sbd"
-                attr.value "3429"
+                attr.ValueInt 3429
                 attr.Label "Student ID"
                 attr.Variant Variant.Outlined
             }

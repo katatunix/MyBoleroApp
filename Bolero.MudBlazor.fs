@@ -32,6 +32,8 @@ module attr =
     let Disabled (value: bool) = Attr.Make "Disabled" value
     let Label (value: string) = Attr.Make "Label" value
     let Text (value: string) = Attr.Make "Text" value
+    let Value (value: string) = Attr.Make "Value" value
+    let ValueInt (value: int) = Attr.Make "Value" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action
