@@ -29,6 +29,7 @@ let render () =
             comp<MudTextField<int>> {
                 attr.name "sbd"
                 attr.ValueInt 3429
+                attr.InputType InputType.Number
                 attr.Label "Student ID"
                 attr.Variant Variant.Outlined
             }

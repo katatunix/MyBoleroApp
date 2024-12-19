@@ -34,6 +34,7 @@ module attr =
     let Text (value: string) = Attr.Make "Text" value
     let Value (value: string) = Attr.Make "Value" value
     let ValueInt (value: int) = Attr.Make "Value" value
+    let InputType (value: InputType) = Attr.Make "InputType" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action
