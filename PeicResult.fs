@@ -21,17 +21,17 @@ let render () =
         hiddenInput "birthday"      "03-10-2014"
         hiddenInput "s_examdate"    "16-11-2024"
         hiddenInput "s_capdothi"    "QM"
-        hiddenInput "sbd"           "3429"
 
         comp<MudStack> {
             attr.Row true
             attr.AlignItems AlignItems.Stretch
 
-            // comp<MudTextField<string>> {
-            //     attr.name "sbd"
-            //     attr.Label "Student ID"
-            //     attr.Variant Variant.Outlined
-            // }
+            comp<MudTextField<string>> {
+                attr.name "sbd"
+                attr.value "3429"
+                attr.Label "Student ID"
+                attr.Variant Variant.Outlined
+            }
 
             comp<MudButton> {
                 attr.ButtonType ButtonType.Submit
