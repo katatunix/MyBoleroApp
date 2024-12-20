@@ -72,7 +72,7 @@ let update msg model =
         dispose result
         model, Cmd.none
 
-let render model =
+let render (extraStyle: string option) (model: Model) =
     match model.State with
     | Loading ->
         comp<MudProgressLinear> {
@@ -86,11 +86,17 @@ let render model =
             attr.Src data.BlobUrl.Value
             attr.ObjectFit ObjectFit.Cover
             attr.Class "rounded"
+            match extraStyle with
+            | Some style ->
+                attr.style style
+            | None ->
+                attr.empty()
         }
-    | Done (Error str) ->
+    | Done (Error msg) ->
         comp<MudText> {
             attr.Color Color.Error
             attr.Typo Typo.body1
-            attr.style "font-family: monospace; overflow-wrap: break-word"
-            str
+            attr.style "font-family: monospace;
+                        overflow-wrap: break-word;"
+            msg
         }

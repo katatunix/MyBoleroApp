@@ -43,22 +43,33 @@ let update msg model =
 
 let render model dispatch =
     comp<MudStack> {
-        Image.render model.Image
+        Html.div {
+            attr.style "position: relative"
+            Image.render (Some "width: 100%") model.Image
 
-        match model.Image.Data with
-        | Some data ->
-            comp<MudStack> {
-                attr.Row true
-                attr.Justify Justify.Center
-                comp<MudText> {
-                    attr.Color Color.Secondary
-                    attr.Typo Typo.subtitle2
-                    attr.style "font-family: monospace"
-                    $"{data.SizeInBytes/1024L} KB (%.2f{data.LoadingTime.TotalSeconds}s)"
+            match model.Image.Data with
+            | Some data ->
+                comp<MudStack> {
+                    attr.Row true
+                    attr.Justify Justify.Center
+                    let label (text: string) =
+                        comp<MudChip<string>> {
+                            attr.Color Color.Dark
+                            text
+                        }
+                    comp<MudStack> {
+                        attr.Row true
+                        attr.Spacing 0
+                        attr.style "position: absolute;
+                                    bottom: 10px;
+                                    right: 5px;"
+                        label $"{data.SizeInBytes/1024L}KB"
+                        label $"%.2f{data.LoadingTime.TotalSeconds}s"
+                    }
                 }
-            }
-        | None ->
-            Html.empty ()
+            | None ->
+                Html.empty ()
+        }
 
         let button (text: string) msg =
             comp<MudButton> {

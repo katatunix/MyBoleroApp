@@ -22,18 +22,15 @@ let render () =
         hiddenInput "s_examdate"    "16-11-2024"
         hiddenInput "s_capdothi"    "QM"
 
-        comp<MudStack> {
-            attr.Row true
-            attr.AlignItems AlignItems.Stretch
-
-            comp<MudTextField<int>> {
+        let sbd =
+            comp<MudNumericField<int>> {
                 attr.name "sbd"
                 attr.ValueInt 3429
-                attr.InputType InputType.Number
                 attr.Label "Student ID"
                 attr.Variant Variant.Outlined
             }
 
+        let go =
             comp<MudButton> {
                 attr.ButtonType ButtonType.Submit
                 attr.Variant Variant.Filled
@@ -42,5 +39,10 @@ let render () =
                 attr.EndIcon Icons.Material.Filled.RocketLaunch
                 "Go"
             }
+
+        comp<MudStack> {
+            sbd
+            go
         }
+
     }
