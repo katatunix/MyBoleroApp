@@ -44,7 +44,7 @@ let render model dispatch =
     comp<MudStack> {
         Html.div {
             attr.style "position: relative"
-            Image.render (Some "width: 100%") model.image
+            Image.render (Some "width: 100%") true model.image
 
             match model.image.Data with
             | Some data ->

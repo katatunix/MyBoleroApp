@@ -38,6 +38,7 @@ module attr =
     let Spacing (value: int) = Attr.Make "Spacing" value
     let Fluid (value: bool) = Attr.Make "Fluid" value
     let HideSpinButtons (value: bool) = Attr.Make "HideSpinButtons" value
+    let SkeletonType (value: SkeletonType) = Attr.Make "SkeletonType" value
 
     let xs (value: int) = Attr.Make "xs" value
     let sm (value: int) = Attr.Make "sm" value

@@ -23,7 +23,7 @@ type Page =
     | Counter
     | RandomPicture
     | PeicResult
-    | MultiImages of MultiImages.Model
+    | MultiImages
 
 type Model =
     { currentUrl: Url
@@ -31,6 +31,7 @@ type Model =
       isMenuOpen: bool
       counter: Counter.Model option
       randomPicture: RandomPicture.Model option
+      multiImages: MultiImages.Model option
       currentPage: Page }
 
 type Msg =
@@ -40,6 +41,7 @@ type Msg =
     | ToggleMenuOpen
     | CounterMsg of Counter.Msg
     | RandomPictureMsg of RandomPicture.Msg
+    | MultiImagesMsg of MultiImages.Msg
 
 let router =
     Router.infer UrlChanged _.currentUrl
@@ -51,6 +53,7 @@ let init _ =
       isMenuOpen = true
       counter = None
       randomPicture = None
+      multiImages = None
       currentPage = Home },
     Cmd.none
 
@@ -70,7 +73,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Counter, page when not page.IsCounter ->
         let m, cmd =
             match model.counter with
-            | None -> Counter.init ()
+            | None -> Counter.init()
             | Some m -> m, Cmd.none
         { model with currentPage = Counter; counter = Some m },
         cmd |> Cmd.map CounterMsg
@@ -78,7 +81,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.RandomPicture, page when not page.IsRandomPicture ->
         let m, cmd =
             match model.randomPicture with
-            | None -> RandomPicture.init ()
+            | None -> RandomPicture.init()
             | Some m -> m, Cmd.none
         { model with currentPage = RandomPicture; randomPicture = Some m },
         cmd |> Cmd.map RandomPictureMsg
@@ -87,7 +90,12 @@ let update (_snackbar: ISnackbar) msg model =
         { model with currentPage = PeicResult }, Cmd.none
 
     | UrlChanged Url.MultiImages, page when not page.IsMultiImages ->
-        { model with currentPage = MultiImages (MultiImages.init()) }, Cmd.none
+        let m, cmd =
+            match model.multiImages with
+            | None -> MultiImages.init()
+            | Some m -> m, Cmd.none
+        { model with currentPage = MultiImages; multiImages = Some m },
+        cmd |> Cmd.map MultiImagesMsg
 
     | SetDarkMode value, _ ->
         { model with isDarkMode = value }, Cmd.none
@@ -109,7 +117,7 @@ let update (_snackbar: ISnackbar) msg model =
             | Counter.Intent.NavigateToHome ->
                 { model with currentUrl = Url.Home; currentPage = Home }, Cmd.none
         | None ->
-            model, Cmd.none
+            bug()
 
     | RandomPictureMsg msg, _ ->
         match model.randomPicture with
@@ -118,7 +126,16 @@ let update (_snackbar: ISnackbar) msg model =
             { model with randomPicture = Some m },
             cmd |> Cmd.map RandomPictureMsg
         | None ->
-            bug ()
+            bug()
+
+    | MultiImagesMsg msg, _ ->
+        match model.multiImages with
+        | Some m ->
+            let m, cmd = m |> MultiImages.update msg
+            { model with multiImages = Some m },
+            cmd |> Cmd.map MultiImagesMsg
+        | None ->
+            bug()
 
     | _ ->
         model, Cmd.none
@@ -136,8 +153,8 @@ let render model dispatch =
             "Random Picture", RandomPicture.render model.randomPicture.Value (RandomPictureMsg >> dispatch)
         | PeicResult ->
             "PEIC Result", PeicResult.render ()
-        | MultiImages m ->
-            "Multi Images", MultiImages.render m
+        | MultiImages ->
+            "Multi Images", MultiImages.render model.multiImages.Value
 
     let appBar =
         comp<MudAppBar> {

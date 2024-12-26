@@ -72,15 +72,16 @@ let update msg model =
         dispose result
         model, Cmd.none
 
-let render (extraStyle: string option) (model: Model) =
+let render (extraStyle: string option) (showsLoading: bool) (model: Model) =
     match model.state with
     | Loading ->
-        comp<MudProgressLinear> {
-            attr.Indeterminate true
-            attr.Color Color.Primary
-            attr.Size Size.Medium
-            attr.Rounded true
-        }
+        if showsLoading then
+            comp<MudSkeleton> {
+                attr.SkeletonType SkeletonType.Rectangle
+            }
+        else
+            Html.empty()
+
     | Done (Ok data) ->
         comp<MudImage> {
             attr.Src data.blobUrl.Value
