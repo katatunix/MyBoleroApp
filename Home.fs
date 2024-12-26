@@ -5,13 +5,22 @@ open MudBlazor
 open Bolero.MudBlazor
 
 let render () =
-    comp<MudStack> {
-        for _ = 1 to 10 do
-            comp<MudPaper> {
-                attr.Class "pa-4"
-                comp<MudText> {
-                    attr.style "font-family: monospace"
-                    System.Guid.NewGuid().ToString()
-                }
+    let paper () =
+        comp<MudPaper> {
+            attr.Class "pa-4"
+            comp<MudText> {
+                attr.style "font-family: monospace"
+                System.Guid.NewGuid().ToString()
+            }
+        }
+
+    comp<MudGrid> {
+        for _ = 1 to 12 do
+            comp<MudItem> {
+                attr.xs 12
+                attr.md 6
+                attr.lg 4
+                attr.xl 3
+                paper()
             }
     }

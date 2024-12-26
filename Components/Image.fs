@@ -8,22 +8,22 @@ open MudBlazor
 open MyBoleroApp
 
 type Data =
-    { BlobUrl: Js.URL
-      SizeInBytes: int64
-      LoadingTime: TimeSpan }
+    { blobUrl: Js.URL
+      sizeInBytes: int64
+      loadingTime: TimeSpan }
 
 type State =
     | Loading
     | Done of Result<Data, string>
 
 type Model =
-    { Url: string
-      State: State }
+    { url: string
+      state: State }
     member this.IsLoading =
-        this.State.IsLoading
+        this.state.IsLoading
 
     member this.Data =
-        match this.State with
+        match this.state with
         | Done (Ok data) -> Some data
         | _ -> None
 
@@ -38,42 +38,42 @@ let private loadCmd (imageUrl: string) =
             use! stream = Http.getStream imageUrl
             let length = stream.Length
             let! blobUrl = Js.createUrl stream
-            return { BlobUrl = blobUrl
-                     SizeInBytes = length
-                     LoadingTime = DateTime.Now - start }
+            return { blobUrl = blobUrl
+                     sizeInBytes = length
+                     loadingTime = DateTime.Now - start }
         })
         imageUrl
         (fun data -> EndLoad (Ok data))
         (fun ex -> EndLoad (Error ex.Message))
 
 let init url =
-    { Url = url
-      State = Loading },
+    { url = url
+      state = Loading },
     loadCmd url
 
 let private dispose = function
-    | Ok data -> data.BlobUrl.Dispose()
+    | Ok data -> data.blobUrl.Dispose()
     | _ -> ()
 
 let update msg model =
-    match msg, model.State with
+    match msg, model.state with
     | StartLoad _, Loading ->
         model, Cmd.none
 
     | StartLoad url, Done result ->
         dispose result
-        { model with Url = url; State = Loading },
+        { model with url = url; state = Loading },
         loadCmd url
 
     | EndLoad result, Loading ->
-        { model with State = Done result }, Cmd.none
+        { model with state = Done result }, Cmd.none
 
     | EndLoad result, _ ->
         dispose result
         model, Cmd.none
 
 let render (extraStyle: string option) (model: Model) =
-    match model.State with
+    match model.state with
     | Loading ->
         comp<MudProgressLinear> {
             attr.Indeterminate true
@@ -83,7 +83,7 @@ let render (extraStyle: string option) (model: Model) =
         }
     | Done (Ok data) ->
         comp<MudImage> {
-            attr.Src data.BlobUrl.Value
+            attr.Src data.blobUrl.Value
             attr.ObjectFit ObjectFit.Cover
             attr.Class "rounded"
             match extraStyle with

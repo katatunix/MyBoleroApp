@@ -1,6 +1,5 @@
 module MyBoleroApp.Counter
 
-open System
 open Elmish
 open Bolero
 open Bolero.Html
@@ -27,9 +26,8 @@ module private Storage =
 
     let load () =
         async {
-            let! value = Js.LocalStorage.get key
-            match value |> Int32.TryParse with
-            | true, number -> return number
+            match! Js.LocalStorage.get key with
+            | Int number -> return number
             | _ -> return 0
         }
 
@@ -65,6 +63,7 @@ let render model dispatch =
                 attr.style "font-family: monospace"
                 string count
             }
+
             comp<MudStack> {
                 attr.Row true
                 attr.Justify Justify.FlexStart

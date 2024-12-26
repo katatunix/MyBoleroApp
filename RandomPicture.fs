@@ -7,47 +7,46 @@ open MudBlazor
 open MyBoleroApp.Components
 
 type Model =
-    { Index: int
-      Image: Image.Model }
+    { index: int
+      image: Image.Model }
 
 type Msg =
     | Next
     | Prev
     | ImageMsg of Image.Msg
 
-let private width, height = 1500, 850
-
 let private makeUrl (index: int) =
+    let width, height = 1500, 850
     $"https://picsum.photos/id/{index}/{width}/{height}"
 
 let init () =
     let index = random.Next 1000
     let m, cmd = Image.init (makeUrl index)
-    { Index = index; Image = m },
+    { index = index; image = m },
     cmd |> Cmd.map ImageMsg
 
 let update msg model =
     match msg with
-    | Next | Prev when model.Image.IsLoading ->
+    | Next | Prev when model.image.IsLoading ->
         model, Cmd.none
     | Next | Prev ->
-        let index = model.Index + (if msg = Next then 1 else -1)
+        let index = model.index + (if msg = Next then 1 else -1)
         let m, cmd =
-            model.Image |> Image.update (Image.Msg.StartLoad (makeUrl index))
-        { model with Index = index; Image = m },
+            model.image |> Image.update (Image.Msg.StartLoad (makeUrl index))
+        { model with index = index; image = m },
         cmd |> Cmd.map ImageMsg
 
     | ImageMsg msg ->
-        let m, cmd = model.Image |> Image.update msg
-        { model with Image = m }, cmd |> Cmd.map ImageMsg
+        let m, cmd = model.image |> Image.update msg
+        { model with image = m }, cmd |> Cmd.map ImageMsg
 
 let render model dispatch =
     comp<MudStack> {
         Html.div {
             attr.style "position: relative"
-            Image.render (Some "width: 100%") model.Image
+            Image.render (Some "width: 100%") model.image
 
-            match model.Image.Data with
+            match model.image.Data with
             | Some data ->
                 comp<MudStack> {
                     attr.Row true
@@ -63,19 +62,19 @@ let render model dispatch =
                         attr.style "position: absolute;
                                     bottom: 10px;
                                     right: 5px;"
-                        label $"{data.SizeInBytes/1024L}KB"
-                        label $"%.2f{data.LoadingTime.TotalSeconds}s"
+                        label $"{data.sizeInBytes/1024L}KB"
+                        label $"%.2f{data.loadingTime.TotalSeconds}s"
                     }
                 }
             | None ->
-                Html.empty ()
+                Html.empty()
         }
 
         let button (text: string) msg =
             comp<MudButton> {
                 attr.Variant Variant.Filled
                 attr.Color Color.Primary
-                attr.Disabled model.Image.IsLoading
+                attr.Disabled model.image.IsLoading
                 on.click (fun _ -> dispatch msg)
                 text
             }
@@ -89,7 +88,7 @@ let render model dispatch =
                 attr.style "font-family: monospace"
                 attr.Typo Typo.subtitle2
                 attr.Color Color.Success
-                string model.Index
+                string model.index
             }
             button "Next" Next
         }

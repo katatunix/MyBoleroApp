@@ -24,12 +24,12 @@ type Page =
     | PeicResult
 
 type Model =
-    { CurrentUrl: Url
-      IsDarkMode: bool
-      IsMenuOpen: bool
-      Counter: Counter.Model option
-      RandomPicture: RandomPicture.Model option
-      CurrentPage: Page }
+    { currentUrl: Url
+      isDarkMode: bool
+      isMenuOpen: bool
+      counter: Counter.Model option
+      randomPicture: RandomPicture.Model option
+      currentPage: Page }
 
 type Msg =
     | UrlChanged of Url
@@ -40,77 +40,77 @@ type Msg =
     | RandomPictureMsg of RandomPicture.Msg
 
 let router =
-    Router.infer UrlChanged _.CurrentUrl
+    Router.infer UrlChanged _.currentUrl
     |> Router.withNotFound Url.NotFound
 
 let init _ =
-    { CurrentUrl = Url.Home
-      IsDarkMode = true
-      IsMenuOpen = true
-      Counter = None
-      RandomPicture = None
-      CurrentPage = Home },
+    { currentUrl = Url.Home
+      isDarkMode = true
+      isMenuOpen = true
+      counter = None
+      randomPicture = None
+      currentPage = Home },
     Cmd.none
 
 let update (_snackbar: ISnackbar) msg model =
     let model =
         match msg with
-        | UrlChanged url -> { model with CurrentUrl = url }
+        | UrlChanged url -> { model with currentUrl = url }
         | _ -> model
 
-    match msg, model.CurrentPage with
+    match msg, model.currentPage with
     | UrlChanged Url.NotFound, _ ->
-        { model with CurrentPage = NotFound }, Cmd.none
+        { model with currentPage = NotFound }, Cmd.none
 
     | UrlChanged Url.Home, _ ->
-        { model with CurrentPage = Home }, Cmd.none
+        { model with currentPage = Home }, Cmd.none
 
     | UrlChanged Url.Counter, page when not page.IsCounter ->
         let m, cmd =
-            match model.Counter with
+            match model.counter with
             | None -> Counter.init ()
             | Some m -> m, Cmd.none
-        { model with CurrentPage = Counter; Counter = Some m },
+        { model with currentPage = Counter; counter = Some m },
         cmd |> Cmd.map CounterMsg
 
     | UrlChanged Url.RandomPicture, page when not page.IsRandomPicture ->
         let m, cmd =
-            match model.RandomPicture with
+            match model.randomPicture with
             | None -> RandomPicture.init ()
             | Some m -> m, Cmd.none
-        { model with CurrentPage = RandomPicture; RandomPicture = Some m },
+        { model with currentPage = RandomPicture; randomPicture = Some m },
         cmd |> Cmd.map RandomPictureMsg
 
     | UrlChanged Url.PeicResult, _ ->
-        { model with CurrentPage = PeicResult }, Cmd.none
+        { model with currentPage = PeicResult }, Cmd.none
 
     | SetDarkMode value, _ ->
-        { model with IsDarkMode = value }, Cmd.none
+        { model with isDarkMode = value }, Cmd.none
 
     | SetMenuOpen value, _ ->
-        { model with IsMenuOpen = value }, Cmd.none
+        { model with isMenuOpen = value }, Cmd.none
 
     | ToggleMenuOpen, _ ->
-        { model with IsMenuOpen = not model.IsMenuOpen }, Cmd.none
+        { model with isMenuOpen = not model.isMenuOpen }, Cmd.none
 
     | CounterMsg msg, _ ->
-        match model.Counter with
+        match model.counter with
         | Some m ->
             let m, intent = m |> Counter.update msg
-            let model = { model with Counter = Some m }
+            let model = { model with counter = Some m }
             match intent with
             | Counter.Intent.Nope ->
                 model, Cmd.none
             | Counter.Intent.NavigateToHome ->
-                { model with CurrentUrl = Url.Home; CurrentPage = Home }, Cmd.none
+                { model with currentUrl = Url.Home; currentPage = Home }, Cmd.none
         | None ->
             model, Cmd.none
 
     | RandomPictureMsg msg, _ ->
-        match model.RandomPicture with
+        match model.randomPicture with
         | Some m ->
             let m, cmd = m |> RandomPicture.update msg
-            { model with RandomPicture = Some m },
+            { model with randomPicture = Some m },
             cmd |> Cmd.map RandomPictureMsg
         | None ->
             bug ()
@@ -120,15 +120,15 @@ let update (_snackbar: ISnackbar) msg model =
 
 let render model dispatch =
     let title, page =
-        match model.CurrentPage with
+        match model.currentPage with
         | NotFound ->
             "Not Found", NotFound.render ()
         | Home ->
             "Home", Home.render ()
         | Counter ->
-            "Counter", Counter.render model.Counter.Value (CounterMsg >> dispatch)
+            "Counter", Counter.render model.counter.Value (CounterMsg >> dispatch)
         | RandomPicture ->
-            "Random Picture", RandomPicture.render model.RandomPicture.Value (RandomPictureMsg >> dispatch)
+            "Random Picture", RandomPicture.render model.randomPicture.Value (RandomPictureMsg >> dispatch)
         | PeicResult ->
             "PEIC Result", PeicResult.render ()
 
@@ -136,7 +136,7 @@ let render model dispatch =
         comp<MudAppBar> {
             comp<MudIconButton> {
                 attr.Icon (
-                    if model.IsMenuOpen then Icons.Material.Filled.MenuOpen
+                    if model.isMenuOpen then Icons.Material.Filled.MenuOpen
                     else Icons.Material.Filled.Menu)
                 attr.Color Color.Inherit
                 attr.Edge Edge.Start
@@ -147,9 +147,8 @@ let render model dispatch =
 
     let sideBar =
         comp<MudDrawer> {
-            attr.Open model.IsMenuOpen
+            attr.Open model.isMenuOpen
             on.OpenChanged (SetMenuOpen >> dispatch)
-            attr.Elevation 1
             comp<MudDrawerHeader> {
                 comp<MudStack> {
                     comp<MudStack> {
@@ -164,7 +163,7 @@ let render model dispatch =
                     }
                     comp<MudSwitch<bool>> {
                         attr.label "Dark Mode"
-                        attr.value model.IsDarkMode
+                        attr.value model.isDarkMode
                         attr.Color Color.Primary
                         on.ValueChanged (SetDarkMode >> dispatch)
                     }
@@ -186,7 +185,7 @@ let render model dispatch =
 
     concat {
         comp<MudThemeProvider> {
-            attr.IsDarkMode model.IsDarkMode
+            attr.IsDarkMode model.isDarkMode
         }
         comp<MudSnackbarProvider> {  }
         comp<MudLayout> {

@@ -39,6 +39,10 @@ module attr =
 
     let xs (value: int) = Attr.Make "xs" value
     let sm (value: int) = Attr.Make "sm" value
+    let md (value: int) = Attr.Make "md" value
+    let lg (value: int) = Attr.Make "lg" value
+    let xl (value: int) = Attr.Make "xl" value
+    let xxl (value: int) = Attr.Make "xxl" value
 
 module on =
     let OpenChanged (action: bool -> unit) = attr.callback "OpenChanged" action
