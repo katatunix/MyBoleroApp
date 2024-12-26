@@ -28,6 +28,7 @@ let render () =
                 attr.ValueInt 3429
                 attr.Label "Student ID"
                 attr.Variant Variant.Outlined
+                attr.HideSpinButtons true
             }
 
         let go =

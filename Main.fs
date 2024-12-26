@@ -15,6 +15,7 @@ type Url =
     | [<EndPoint "/counter">] Counter
     | [<EndPoint "/random-picture">] RandomPicture
     | [<EndPoint "/peic-result">] PeicResult
+    | [<EndPoint "/multi-images">] MultiImages
 
 type Page =
     | NotFound
@@ -22,6 +23,7 @@ type Page =
     | Counter
     | RandomPicture
     | PeicResult
+    | MultiImages of MultiImages.Model
 
 type Model =
     { currentUrl: Url
@@ -84,6 +86,9 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.PeicResult, _ ->
         { model with currentPage = PeicResult }, Cmd.none
 
+    | UrlChanged Url.MultiImages, page when not page.IsMultiImages ->
+        { model with currentPage = MultiImages (MultiImages.init()) }, Cmd.none
+
     | SetDarkMode value, _ ->
         { model with isDarkMode = value }, Cmd.none
 
@@ -131,6 +136,8 @@ let render model dispatch =
             "Random Picture", RandomPicture.render model.randomPicture.Value (RandomPictureMsg >> dispatch)
         | PeicResult ->
             "PEIC Result", PeicResult.render ()
+        | MultiImages m ->
+            "Multi Images", MultiImages.render m
 
     let appBar =
         comp<MudAppBar> {
@@ -180,6 +187,7 @@ let render model dispatch =
                 navLink Url.Counter "Counter"
                 navLink Url.RandomPicture "Random Picture"
                 navLink Url.PeicResult "PEIC Result"
+                navLink Url.MultiImages "Multi Images"
             }
         }
 

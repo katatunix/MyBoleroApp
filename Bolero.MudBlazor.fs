@@ -36,6 +36,8 @@ module attr =
     let ValueInt (value: int) = Attr.Make "Value" value
     let InputType (value: InputType) = Attr.Make "InputType" value
     let Spacing (value: int) = Attr.Make "Spacing" value
+    let Fluid (value: bool) = Attr.Make "Fluid" value
+    let HideSpinButtons (value: bool) = Attr.Make "HideSpinButtons" value
 
     let xs (value: int) = Attr.Make "xs" value
     let sm (value: int) = Attr.Make "sm" value

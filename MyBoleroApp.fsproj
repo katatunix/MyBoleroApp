@@ -21,6 +21,7 @@
     <Compile Include="Counter.fs" />
     <Compile Include="RandomPicture.fs" />
     <Compile Include="PeicResult.fs" />
+    <Compile Include="MultiImages.fs" />
     <Compile Include="Main.fs" />
     <Compile Include="Startup.fs" />
   </ItemGroup>

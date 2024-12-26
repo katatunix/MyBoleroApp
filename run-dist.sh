@@ -1,3 +1,3 @@
 #!/bin/sh -x
 
-dotnet serve -d dist/wwwroot -a any -o
+dotnet serve -d dist/wwwroot -p 80 -a any -o
