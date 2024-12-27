@@ -144,15 +144,15 @@ let render model dispatch =
     let title, page =
         match model.currentPage with
         | NotFound ->
-            "Not Found", NotFound.render ()
+            "Not Found", NotFound.render()
         | Home ->
-            "Home", Home.render ()
+            "Home", Home.render()
         | Counter ->
             "Counter", Counter.render model.counter.Value (CounterMsg >> dispatch)
         | RandomPicture ->
             "Random Picture", RandomPicture.render model.randomPicture.Value (RandomPictureMsg >> dispatch)
         | PeicResult ->
-            "PEIC Result", PeicResult.render ()
+            "PEIC Result", PeicResult.render()
         | MultiImages ->
             "Multi Images", MultiImages.render model.multiImages.Value
 

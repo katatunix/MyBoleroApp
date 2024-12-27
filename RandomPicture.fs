@@ -15,13 +15,15 @@ type Msg =
     | Prev
     | ImageMsg of Image.Msg
 
+let private width, height = 1500, 850
+let private ratio = float(width) / float(height)
+
 let private makeUrl (index: int) =
-    let width, height = 1500, 850
     $"https://picsum.photos/id/{index}/{width}/{height}"
 
 let init () =
     let index = random.Next 1000
-    let m, cmd = Image.init (makeUrl index)
+    let m, cmd = Image.init (makeUrl index) (Some ratio)
     { index = index; image = m },
     cmd |> Cmd.map ImageMsg
 
@@ -44,7 +46,7 @@ let render model dispatch =
     comp<MudStack> {
         Html.div {
             attr.style "position: relative"
-            Image.render (Some "width: 100%") true model.image
+            Image.render (Some "width: 100%") model.image
 
             match model.image.Data with
             | Some data ->

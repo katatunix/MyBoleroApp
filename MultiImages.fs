@@ -12,17 +12,17 @@ type Msg =
     | ImageMsg of int * Components.Image.Msg
 
 let private width, height = 1500, 850
+let private ratio = float(width) / float(height)
 
 let init () =
-    let tmp =
-        [|
-            for _ = 1 to 100 do
-                let url = $"https://picsum.photos/id/{random.Next(500)}/{width}/{height}"
-                Components.Image.init url
-        |]
-    let model = { Images = tmp |> Array.map fst }
+    let arr =
+        Array.init 100 (fun _ ->
+            let url = $"https://picsum.photos/id/{random.Next(500)}/{width}/{height}"
+            Components.Image.init url (Some ratio)
+        )
+    let model = { Images = arr |> Array.map fst }
     let cmd =
-        tmp
+        arr
         |> Seq.mapi (fun index (_, cmd) ->
             cmd |> Cmd.map (fun msg -> ImageMsg (index, msg))
         )
@@ -40,5 +40,5 @@ let update (msg: Msg) (model: Model) =
 let render (model: Model) =
     comp<MudStack> {
         for m in model.Images do
-            Components.Image.render None true m
+            Components.Image.render None m
     }

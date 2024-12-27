@@ -18,6 +18,7 @@ type State =
 
 type Model =
     { url: string
+      ratio: float option
       state: State }
     member this.IsLoading =
         this.state.IsLoading
@@ -46,8 +47,9 @@ let private loadCmd (imageUrl: string) =
         (fun data -> EndLoad (Ok data))
         (fun ex -> EndLoad (Error ex.Message))
 
-let init url =
+let init url ratio =
     { url = url
+      ratio = ratio
       state = Loading },
     loadCmd url
 
@@ -72,27 +74,29 @@ let update msg model =
         dispose result
         model, Cmd.none
 
-let render (extraStyle: string option) (showsLoading: bool) (model: Model) =
+let render (extraStyle: string option) (model: Model) =
     match model.state with
     | Loading ->
-        if showsLoading then
-            comp<MudSkeleton> {
-                attr.SkeletonType SkeletonType.Rectangle
-            }
-        else
-            Html.empty()
+        comp<MudSkeleton> {
+            attr.SkeletonType SkeletonType.Rectangle
+            match model.ratio with
+            | Some ratio ->
+                attr.style $"height: auto; aspect-ratio: {ratio}"
+            | None ->
+                attr.empty()
+        }
 
     | Done (Ok data) ->
         comp<MudImage> {
             attr.Src data.blobUrl.Value
             attr.ObjectFit ObjectFit.Cover
-            attr.Class "rounded"
             match extraStyle with
             | Some style ->
                 attr.style style
             | None ->
                 attr.empty()
         }
+
     | Done (Error msg) ->
         comp<MudText> {
             attr.Color Color.Error
