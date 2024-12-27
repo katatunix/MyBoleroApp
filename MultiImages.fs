@@ -18,7 +18,7 @@ let private mkUrl () = $"https://picsum.photos/id/{random.Next(500)}/{width}/{he
 
 let init () =
     let arr =
-        Array.init 10 (fun _ ->
+        Array.init 200 (fun _ ->
             let url = mkUrl()
             Components.Image.init url (Some ratio)
         )
