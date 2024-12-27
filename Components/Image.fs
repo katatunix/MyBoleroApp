@@ -45,7 +45,7 @@ let private loadCmd (imageUrl: string) =
         })
         imageUrl
         (fun data -> EndLoad (Ok data))
-        (fun ex -> EndLoad (Error ex.Message))
+        (fun _ex -> EndLoad (Error "Oops!"))
 
 let init url ratio =
     { url = url
@@ -75,15 +75,18 @@ let update msg model =
         model, Cmd.none
 
 let render (model: Model) =
+    let attrRatio() =
+        match model.ratio with
+        | Some ratio ->
+            attr.style $"height: auto; aspect-ratio: {ratio}"
+        | None ->
+            attr.empty()
+
     match model.state with
     | Loading ->
         comp<MudSkeleton> {
             attr.SkeletonType SkeletonType.Rectangle
-            match model.ratio with
-            | Some ratio ->
-                attr.style $"height: auto; aspect-ratio: {ratio}"
-            | None ->
-                attr.empty()
+            attrRatio()
         }
 
     | Done (Ok data) ->
@@ -91,11 +94,16 @@ let render (model: Model) =
             attr.Src data.blobUrl.Value
         }
 
-    | Done (Error msg) ->
-        comp<MudText> {
-            attr.Color Color.Error
-            attr.Typo Typo.body1
-            attr.style "font-family: monospace;
-                        overflow-wrap: break-word"
-            msg
+    | Done (Error _msg) ->
+        comp<MudPaper> {
+            attr.Square true
+            attr.Class "mud-error"
+            attrRatio()
+            // comp<MudText> {
+            //     attr.Color Color.Error
+            //     attr.Typo Typo.body1
+            //     attr.style "font-family: monospace;
+            //                 overflow-wrap: break-word"
+            //     msg
+            // }
         }

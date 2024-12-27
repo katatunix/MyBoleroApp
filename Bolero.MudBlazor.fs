@@ -40,6 +40,7 @@ module attr =
     let HideSpinButtons (value: bool) = Attr.Make "HideSpinButtons" value
     let SkeletonType (value: SkeletonType) = Attr.Make "SkeletonType" value
     let FullWidth (value: bool) = Attr.Make "FullWidth" value
+    let Square (value: bool) = Attr.Make "Square" value
 
     let xs (value: int) = Attr.Make "xs" value
     let sm (value: int) = Attr.Make "sm" value
