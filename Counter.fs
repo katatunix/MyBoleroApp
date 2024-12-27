@@ -46,7 +46,8 @@ let update msg model =
         | _ -> model
 
     let intent =
-        if random.Next() % 50 = 25 then NavigateToHome else Nope
+        Nope
+        // if random.Next() % 2 = 0 then NavigateToHome else Nope
 
     model, intent
 

@@ -115,7 +115,7 @@ let update (_snackbar: ISnackbar) msg model =
             | Counter.Intent.Nope ->
                 model, Cmd.none
             | Counter.Intent.NavigateToHome ->
-                { model with currentUrl = Url.Home; currentPage = Home }, Cmd.none
+                { model with currentUrl = Url.Home }, Cmd.none
         | None ->
             bug()
 
