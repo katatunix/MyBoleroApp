@@ -154,7 +154,7 @@ let render model dispatch =
         | PeicResult ->
             "PEIC Result", PeicResult.render()
         | MultiImages ->
-            "Multi Images", MultiImages.render model.multiImages.Value
+            "Multi Images", MultiImages.render model.multiImages.Value (MultiImagesMsg >> dispatch)
 
     let appBar =
         comp<MudAppBar> {
@@ -242,6 +242,6 @@ type App() =
 
         Program.mkProgram init (update this.Snackbar) render
         |> Program.withRouter router
-#if DEBUG
-        |> Program.withConsoleTrace
-#endif
+// #if DEBUG
+//         |> Program.withConsoleTrace
+// #endif
