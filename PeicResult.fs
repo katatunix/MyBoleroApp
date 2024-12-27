@@ -1,8 +1,8 @@
 module MyBoleroApp.PeicResult
 
+open Bolero
 open Bolero.Html
 open MudBlazor
-open Bolero.MudBlazor
 
 let render () =
     let hiddenInput name value =
@@ -38,11 +38,24 @@ let render () =
                 attr.Color Color.Success
                 attr.Size Size.Large
                 attr.EndIcon Icons.Material.Filled.RocketLaunch
+                attr.FullWidth true
                 "Go"
             }
 
-        comp<MudStack> {
-            sbd
-            go
+        comp<MudGrid> {
+            attr.Spacing 2
+            attr.Justify Justify.Center
+            let item (x: Node) =
+                comp<MudItem> {
+                    attr.xs 12
+                    attr.sm 8
+                    attr.md 6
+                    attr.lg 4
+                    attr.xl 3
+                    x
+                }
+            item sbd
+            comp<MudFlexBreak>
+            item go
         }
     }

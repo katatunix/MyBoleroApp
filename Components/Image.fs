@@ -89,7 +89,6 @@ let render (model: Model) =
     | Done (Ok data) ->
         comp<MudImage> {
             attr.Src data.blobUrl.Value
-            attr.ObjectFit ObjectFit.Cover
         }
 
     | Done (Error msg) ->
