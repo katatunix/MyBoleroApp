@@ -74,7 +74,7 @@ let update msg model =
         dispose result
         model, Cmd.none
 
-let render (extraStyle: string option) (model: Model) =
+let render (model: Model) =
     match model.state with
     | Loading ->
         comp<MudSkeleton> {
@@ -90,11 +90,6 @@ let render (extraStyle: string option) (model: Model) =
         comp<MudImage> {
             attr.Src data.blobUrl.Value
             attr.ObjectFit ObjectFit.Cover
-            match extraStyle with
-            | Some style ->
-                attr.style style
-            | None ->
-                attr.empty()
         }
 
     | Done (Error msg) ->
@@ -102,6 +97,6 @@ let render (extraStyle: string option) (model: Model) =
             attr.Color Color.Error
             attr.Typo Typo.body1
             attr.style "font-family: monospace;
-                        overflow-wrap: break-word;"
+                        overflow-wrap: break-word"
             msg
         }

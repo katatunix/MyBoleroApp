@@ -46,7 +46,7 @@ let render model dispatch =
     comp<MudStack> {
         comp<MudStack> {
             attr.style "position: relative"
-            Image.render (Some "width: 100%") model.image
+            Image.render model.image
 
             match model.image.Data with
             | Some data ->
@@ -60,7 +60,7 @@ let render model dispatch =
                     attr.Spacing 0
                     attr.style "position: absolute;
                                 bottom: 10px;
-                                right: 5px;"
+                                right: 5px"
                     label $"{data.sizeInBytes/1024L}KB"
                     label $"%.2f{data.loadingTime.TotalSeconds}s"
                 }

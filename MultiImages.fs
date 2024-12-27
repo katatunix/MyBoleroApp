@@ -40,5 +40,5 @@ let update (msg: Msg) (model: Model) =
 let render (model: Model) =
     comp<MudStack> {
         for m in model.Images do
-            Components.Image.render None m
+            Components.Image.render m
     }
