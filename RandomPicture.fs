@@ -44,29 +44,25 @@ let update msg model =
 
 let render model dispatch =
     comp<MudStack> {
-        Html.div {
+        comp<MudStack> {
             attr.style "position: relative"
             Image.render (Some "width: 100%") model.image
 
             match model.image.Data with
             | Some data ->
+                let label (text: string) =
+                    comp<MudChip<string>> {
+                        attr.Color Color.Dark
+                        text
+                    }
                 comp<MudStack> {
                     attr.Row true
-                    attr.Justify Justify.Center
-                    let label (text: string) =
-                        comp<MudChip<string>> {
-                            attr.Color Color.Dark
-                            text
-                        }
-                    comp<MudStack> {
-                        attr.Row true
-                        attr.Spacing 0
-                        attr.style "position: absolute;
-                                    bottom: 10px;
-                                    right: 5px;"
-                        label $"{data.sizeInBytes/1024L}KB"
-                        label $"%.2f{data.loadingTime.TotalSeconds}s"
-                    }
+                    attr.Spacing 0
+                    attr.style "position: absolute;
+                                bottom: 10px;
+                                right: 5px;"
+                    label $"{data.sizeInBytes/1024L}KB"
+                    label $"%.2f{data.loadingTime.TotalSeconds}s"
                 }
             | None ->
                 Html.empty()
