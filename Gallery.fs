@@ -1,4 +1,4 @@
-module MyBoleroApp.MultiImages
+module MyBoleroApp.Gallery
 
 open Elmish
 open Bolero
@@ -54,10 +54,11 @@ let update msg model =
 let render model dispatch =
     Html.div {
         comp<MudGrid> {
+            attr.Spacing 3
             for m in model.images do
                 comp<MudItem> {
                     attr.xs 12
-                    attr.lg 6
+                    attr.md 6
                     comp<MudStack> {
                         Components.Image.render m
                     }

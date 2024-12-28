@@ -37,9 +37,9 @@ let private loadCmd (imageUrl: string) =
     Cmd.OfAsync.either
         (fun imageUrl -> async {
             let start = DateTime.Now
-            use! stream = Http.getStream imageUrl
-            let length = stream.Length
-            let! blobUrl = Js.createUrl stream
+            use! response = Http.getStream imageUrl
+            let length = response.Stream.Length
+            let! blobUrl = Js.createUrl response.Stream response.ContentType
             return { blobUrl = blobUrl
                      sizeInBytes = length
                      loadingTime = DateTime.Now - start }

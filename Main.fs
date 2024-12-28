@@ -15,7 +15,7 @@ type Url =
     | [<EndPoint "/counter">] Counter
     | [<EndPoint "/random-picture">] RandomPicture
     | [<EndPoint "/peic-result">] PeicResult
-    | [<EndPoint "/multi-images">] MultiImages
+    | [<EndPoint "/gallery">] Gallery
 
 type Page =
     | NotFound
@@ -23,7 +23,7 @@ type Page =
     | Counter
     | RandomPicture
     | PeicResult
-    | MultiImages
+    | Gallery
 
 type Model =
     { currentUrl: Url
@@ -31,7 +31,7 @@ type Model =
       isMenuOpen: bool
       counter: Counter.Model option
       randomPicture: RandomPicture.Model option
-      multiImages: MultiImages.Model option
+      gallery: Gallery.Model option
       currentPage: Page }
 
 type Msg =
@@ -41,7 +41,7 @@ type Msg =
     | ToggleMenuOpen
     | CounterMsg of Counter.Msg
     | RandomPictureMsg of RandomPicture.Msg
-    | MultiImagesMsg of MultiImages.Msg
+    | GalleryMsg of Gallery.Msg
 
 let router =
     Router.infer UrlChanged _.currentUrl
@@ -53,7 +53,7 @@ let init _ =
       isMenuOpen = true
       counter = None
       randomPicture = None
-      multiImages = None
+      gallery = None
       currentPage = Home },
     Cmd.none
 
@@ -89,13 +89,13 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.PeicResult, _ ->
         { model with currentPage = PeicResult }, Cmd.none
 
-    | UrlChanged Url.MultiImages, page when not page.IsMultiImages ->
+    | UrlChanged Url.Gallery, page when not page.IsGallery ->
         let m, cmd =
-            match model.multiImages with
-            | None -> MultiImages.init()
+            match model.gallery with
+            | None -> Gallery.init()
             | Some m -> m, Cmd.none
-        { model with currentPage = MultiImages; multiImages = Some m },
-        cmd |> Cmd.map MultiImagesMsg
+        { model with currentPage = Gallery; gallery = Some m },
+        cmd |> Cmd.map GalleryMsg
 
     | SetDarkMode value, _ ->
         { model with isDarkMode = value }, Cmd.none
@@ -128,12 +128,12 @@ let update (_snackbar: ISnackbar) msg model =
         | None ->
             bug()
 
-    | MultiImagesMsg msg, _ ->
-        match model.multiImages with
+    | GalleryMsg msg, _ ->
+        match model.gallery with
         | Some m ->
-            let m, cmd = m |> MultiImages.update msg
-            { model with multiImages = Some m },
-            cmd |> Cmd.map MultiImagesMsg
+            let m, cmd = m |> Gallery.update msg
+            { model with gallery = Some m },
+            cmd |> Cmd.map GalleryMsg
         | None ->
             bug()
 
@@ -153,8 +153,8 @@ let render model dispatch =
             "Random Picture", RandomPicture.render model.randomPicture.Value (RandomPictureMsg >> dispatch)
         | PeicResult ->
             "PEIC Result", PeicResult.render()
-        | MultiImages ->
-            "Multi Images", MultiImages.render model.multiImages.Value (MultiImagesMsg >> dispatch)
+        | Gallery ->
+            "Gallery", Gallery.render model.gallery.Value (GalleryMsg >> dispatch)
 
     let appBar =
         comp<MudAppBar> {
@@ -204,7 +204,7 @@ let render model dispatch =
                 navLink Url.Counter "Counter"
                 navLink Url.RandomPicture "Random Picture"
                 navLink Url.PeicResult "PEIC Result"
-                navLink Url.MultiImages "Multi Images"
+                navLink Url.Gallery "Gallery"
             }
         }
 

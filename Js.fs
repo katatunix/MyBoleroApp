@@ -20,10 +20,11 @@ type URL (value: string) =
     member this.Dispose() =
         (this:IDisposable).Dispose()
 
-let createUrl (stream: System.IO.Stream) =
+let createUrl (stream: System.IO.Stream) (contentType: string option) =
     async {
         use streamRef = new DotNetStreamReference(stream)
-        let! url = runtime.InvokeAsync<string>("makeUrl", streamRef).AsTask() |> Async.AwaitTask
+        let contentType = contentType |> Option.toObj
+        let! url = runtime.InvokeAsync<string>("makeUrl", streamRef, contentType).AsTask() |> Async.AwaitTask
 #if DEBUG
         printfn "Js.createUrl: %s" url
 #endif
