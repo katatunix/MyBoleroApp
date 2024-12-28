@@ -20,6 +20,7 @@ type Model =
     { url: string
       ratio: float option
       state: State }
+
     member this.IsLoading =
         this.state.IsLoading
 
@@ -74,30 +75,30 @@ let update msg model =
         dispose result
         model, Cmd.none
 
-let render (model: Model) =
-    let attrRatio() =
+let render model =
+    let attrRatio () =
         match model.ratio with
         | Some ratio ->
             attr.style $"height: auto; aspect-ratio: {ratio}"
         | None ->
-            attr.empty()
+            attr.empty ()
 
     match model.state with
     | Loading ->
         comp<MudSkeleton> {
             attr.SkeletonType SkeletonType.Rectangle
-            attrRatio()
+            attrRatio ()
         }
 
     | Done (Ok data) ->
         comp<MudImage> {
             attr.Src data.blobUrl.Value
-            attrRatio()
+            attrRatio ()
         }
 
     | Done (Error _msg) ->
         comp<MudPaper> {
             attr.Square true
             attr.Class "mud-error"
-            attrRatio()
+            attrRatio ()
         }

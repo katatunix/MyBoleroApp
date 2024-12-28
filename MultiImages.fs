@@ -12,13 +12,14 @@ type Msg =
     | ImageMsg of int * Components.Image.Msg
     | Refresh
 
+let [<Literal>] private ImageNumber = 200
 let private width, height = 1500, 850
 let private ratio = float(width) / float(height)
 let private mkUrl () = $"https://picsum.photos/id/{random.Next(500)}/{width}/{height}"
 
 let init () =
     let arr =
-        Array.init 200 (fun _ ->
+        Array.init ImageNumber (fun _ ->
             let url = mkUrl()
             Components.Image.init url (Some ratio)
         )
@@ -36,8 +37,8 @@ let update msg model =
     | ImageMsg (index, msg) ->
         let m, cmd = model.Images[index] |> Components.Image.update msg
         model.Images[index] <- m
-        model,
-        cmd |> Cmd.map (fun msg -> ImageMsg (index, msg))
+        model, cmd |> Cmd.map (fun msg -> ImageMsg (index, msg))
+
     | Refresh ->
         let cmds =
             seq {
@@ -56,9 +57,9 @@ let render model dispatch =
                 Components.Image.render m
         }
         comp<MudFab> {
-            attr.StartIcon Icons.Material.Filled.Refresh
+            attr.StartIcon Icons.Material.Filled.Adjust
             attr.Color Color.Secondary
-            attr.style "position: fixed; bottom: 30px; right: 50px"
+            attr.style "position: fixed; bottom: 16px; right: 16px"
             on.click (fun _ -> dispatch Refresh)
         }
     }
