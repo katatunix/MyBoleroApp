@@ -31,9 +31,9 @@
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
 <script>
-  async function makeUrl(stream) {
+  async function makeUrl(stream, contentType) {
     const arrayBuffer = await stream.arrayBuffer();
-    const blob = new Blob([arrayBuffer]);
+    const blob = new Blob([arrayBuffer], { type: contentType });
     return URL.createObjectURL(blob);
   }
 
