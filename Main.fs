@@ -32,7 +32,8 @@ type Model =
       counter: Counter.Model option
       randomPicture: RandomPicture.Model option
       gallery: Gallery.Model option
-      currentPage: Page }
+      currentPage: Page
+      updateNumber: int }
 
 type Msg =
     | UrlChanged of Url
@@ -54,7 +55,8 @@ let init _ =
       counter = None
       randomPicture = None
       gallery = None
-      currentPage = Home },
+      currentPage = Home
+      updateNumber = 0 },
     Cmd.none
 
 let update (_snackbar: ISnackbar) msg model =
@@ -62,6 +64,8 @@ let update (_snackbar: ISnackbar) msg model =
         match msg with
         | UrlChanged url -> { model with currentUrl = url }
         | _ -> model
+
+    let model = { model with updateNumber = model.updateNumber + 1 }
 
     match msg, model.currentPage with
     | UrlChanged Url.NotFound, _ ->
@@ -167,6 +171,13 @@ let render model dispatch =
                 on.click (fun _ -> dispatch ToggleMenuOpen)
             }
             comp<MudText> { attr.Typo Typo.h5; title }
+            comp<MudSpacer> { attr.empty() }
+            comp<MudChip<string>> {
+                attr.Color Color.Secondary
+                attr.Variant Variant.Outlined
+                attr.Size Size.Large
+                string model.updateNumber
+            }
         }
 
     let sideBar =
