@@ -6,7 +6,7 @@ open Bolero.Html
 open MudBlazor
 
 type Model =
-    { Images: Components.Image.Model array }
+    { images: Components.Image.Model array }
 
 type Msg =
     | ImageMsg of int * Components.Image.Msg
@@ -23,7 +23,7 @@ let init () =
             let url = mkUrl()
             Components.Image.init url (Some ratio)
         )
-    let model = { Images = arr |> Array.map fst }
+    let model = { images = arr |> Array.map fst }
     let cmd =
         arr
         |> Seq.mapi (fun index (_, cmd) ->
@@ -35,15 +35,16 @@ let init () =
 let update msg model =
     match msg with
     | ImageMsg (index, msg) ->
-        let m, cmd = model.Images[index] |> Components.Image.update msg
-        model.Images[index] <- m
-        model, cmd |> Cmd.map (fun msg -> ImageMsg (index, msg))
+        let m, cmd = model.images[index] |> Components.Image.update msg
+        model.images[index] <- m
+        model,
+        cmd |> Cmd.map (fun msg -> ImageMsg (index, msg))
 
     | Refresh ->
         let cmds =
             seq {
-                for i = 0 to model.Images.Length - 1 do
-                    let m = model.Images[i]
+                for i = 0 to model.images.Length - 1 do
+                    let m = model.images[i]
                     if m.IsLoading |> not then
                         ImageMsg (i, Components.Image.Msg.StartLoad (mkUrl()))
                         |> Cmd.ofMsg
@@ -52,9 +53,15 @@ let update msg model =
 
 let render model dispatch =
     Html.div {
-        comp<MudStack> {
-            for m in model.Images do
-                Components.Image.render m
+        comp<MudGrid> {
+            for m in model.images do
+                comp<MudItem> {
+                    attr.xs 12
+                    attr.lg 6
+                    comp<MudStack> {
+                        Components.Image.render m
+                    }
+                }
         }
         comp<MudFab> {
             attr.StartIcon Icons.Material.Filled.Adjust

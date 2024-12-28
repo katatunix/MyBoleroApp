@@ -68,7 +68,7 @@ let render model dispatch =
                 Html.empty()
         }
 
-        let button (text: string) msg =
+        let button (text: string) (msg: Msg) =
             comp<MudButton> {
                 attr.Variant Variant.Filled
                 attr.Color Color.Primary
