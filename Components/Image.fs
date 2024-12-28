@@ -92,6 +92,7 @@ let render (model: Model) =
     | Done (Ok data) ->
         comp<MudImage> {
             attr.Src data.blobUrl.Value
+            attrRatio()
         }
 
     | Done (Error _msg) ->
@@ -99,11 +100,4 @@ let render (model: Model) =
             attr.Square true
             attr.Class "mud-error"
             attrRatio()
-            // comp<MudText> {
-            //     attr.Color Color.Error
-            //     attr.Typo Typo.body1
-            //     attr.style "font-family: monospace;
-            //                 overflow-wrap: break-word"
-            //     msg
-            // }
         }
