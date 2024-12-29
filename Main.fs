@@ -170,12 +170,12 @@ let render model dispatch =
                 attr.Edge Edge.Start
                 on.click (fun _ -> dispatch ToggleMenuOpen)
             }
-            comp<MudText> { attr.Typo Typo.h5; title }
+            comp<MudText> {
+                attr.Typo Typo.h5
+                title
+            }
             comp<MudSpacer> { attr.empty() }
             comp<MudChip<string>> {
-                attr.Color Color.Secondary
-                attr.Variant Variant.Outlined
-                attr.Size Size.Large
                 string model.updateNumber
             }
         }
