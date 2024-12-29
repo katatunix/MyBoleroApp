@@ -17,11 +17,11 @@ let private width, height = 1500, 850
 let private ratio = float(width) / float(height)
 let private mkUrl () = $"https://picsum.photos/id/{random.Next(500)}/{width}/{height}"
 
-let init () =
+let init js client =
     let arr =
         Array.init ImageNumber (fun _ ->
             let url = mkUrl()
-            Components.Image.init url (Some ratio)
+            Components.Image.init js client url (Some ratio)
         )
     let model = { images = arr |> Array.map fst }
     let cmd =
@@ -32,10 +32,10 @@ let init () =
         |> Cmd.batch
     model, cmd
 
-let update msg model =
+let update js client msg model =
     match msg with
     | ImageMsg (index, msg) ->
-        let m, cmd = model.images[index] |> Components.Image.update msg
+        let m, cmd = model.images[index] |> Components.Image.update js client msg
         model.images[index] <- m
         model,
         cmd |> Cmd.map (fun msg -> ImageMsg (index, msg))

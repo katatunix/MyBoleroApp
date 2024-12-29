@@ -33,32 +33,32 @@ type Msg =
     | StartLoad of url: string
     | EndLoad of Result<Data, string>
 
-let private loadCmd (imageUrl: string) =
+let private loadCmd js client imageUrl =
     Cmd.OfAsync.either
         (fun imageUrl -> async {
             let start = DateTime.Now
-            use! response = Http.getStream imageUrl
+            use! response = Http.getStream client imageUrl
             let length = response.Stream.Length
-            let! blobUrl = Js.createUrl response.Stream response.ContentType
+            let! blobUrl = Js.createUrl js response.Stream response.ContentType
             return { blobUrl = blobUrl
                      sizeInBytes = length
                      loadingTime = DateTime.Now - start }
         })
         imageUrl
         (fun data -> EndLoad (Ok data))
-        (fun _ex -> EndLoad (Error "Oops!"))
+        (fun ex -> EndLoad (Error ex.Message))
 
-let init url ratio =
+let init js client url ratio =
     { url = url
       ratio = ratio
       state = Loading },
-    loadCmd url
+    loadCmd js client url
 
 let private dispose = function
-    | Ok data -> data.blobUrl.Dispose()
+    | Ok data -> (data.blobUrl: IDisposable).Dispose()
     | _ -> ()
 
-let update msg model =
+let update js client msg model =
     match msg, model.state with
     | StartLoad _, Loading ->
         model, Cmd.none
@@ -66,7 +66,7 @@ let update msg model =
     | StartLoad url, Done result ->
         dispose result
         { model with url = url; state = Loading },
-        loadCmd url
+        loadCmd js client url
 
     | EndLoad result, Loading ->
         { model with state = Done result }, Cmd.none

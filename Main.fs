@@ -59,7 +59,7 @@ let init _ =
       updateNumber = 0 },
     Cmd.none
 
-let update (_snackbar: ISnackbar) msg model =
+let update js client (_snackbar: ISnackbar) msg model =
     let model =
         match msg with
         | UrlChanged url -> { model with currentUrl = url }
@@ -77,7 +77,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Counter, page when not page.IsCounter ->
         let m, cmd =
             match model.counter with
-            | None -> Counter.init()
+            | None -> Counter.init js
             | Some m -> m, Cmd.none
         { model with currentPage = Counter; counter = Some m },
         cmd |> Cmd.map CounterMsg
@@ -85,7 +85,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.RandomPicture, page when not page.IsRandomPicture ->
         let m, cmd =
             match model.randomPicture with
-            | None -> RandomPicture.init()
+            | None -> RandomPicture.init js client
             | Some m -> m, Cmd.none
         { model with currentPage = RandomPicture; randomPicture = Some m },
         cmd |> Cmd.map RandomPictureMsg
@@ -96,7 +96,7 @@ let update (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Gallery, page when not page.IsGallery ->
         let m, cmd =
             match model.gallery with
-            | None -> Gallery.init()
+            | None -> Gallery.init js client
             | Some m -> m, Cmd.none
         { model with currentPage = Gallery; gallery = Some m },
         cmd |> Cmd.map GalleryMsg
@@ -111,35 +111,18 @@ let update (_snackbar: ISnackbar) msg model =
         { model with isMenuOpen = not model.isMenuOpen }, Cmd.none
 
     | CounterMsg msg, _ ->
-        match model.counter with
-        | Some m ->
-            let m, intent = m |> Counter.update msg
-            let model = { model with counter = Some m }
-            match intent with
-            | Counter.Intent.Nope ->
-                model, Cmd.none
-            | Counter.Intent.NavigateToHome ->
-                { model with currentUrl = Url.Home }, Cmd.none
-        | None ->
-            bug()
+        let m = model.counter.Value |> Counter.update js msg
+        { model with counter = Some m }, Cmd.none
 
     | RandomPictureMsg msg, _ ->
-        match model.randomPicture with
-        | Some m ->
-            let m, cmd = m |> RandomPicture.update msg
-            { model with randomPicture = Some m },
-            cmd |> Cmd.map RandomPictureMsg
-        | None ->
-            bug()
+        let m, cmd = model.randomPicture.Value |> RandomPicture.update js client msg
+        { model with randomPicture = Some m },
+        cmd |> Cmd.map RandomPictureMsg
 
     | GalleryMsg msg, _ ->
-        match model.gallery with
-        | Some m ->
-            let m, cmd = m |> Gallery.update msg
-            { model with gallery = Some m },
-            cmd |> Cmd.map GalleryMsg
-        | None ->
-            bug()
+        let m, cmd = model.gallery.Value |> Gallery.update js client msg
+        { model with gallery = Some m },
+        cmd |> Cmd.map GalleryMsg
 
     | _ ->
         model, Cmd.none
@@ -238,7 +221,7 @@ let render model dispatch =
     }
 
 type App() =
-    inherit ProgramComponent<Model, Msg>()
+    inherit ProgramComponent<Model,Msg>()
 
     [<Inject>]
     member val JSRuntime = Unchecked.defaultof<IJSRuntime> with get, set
@@ -248,11 +231,5 @@ type App() =
     member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
 
     override this.Program =
-        Js.runtime <- this.JSRuntime
-        Http.client <- this.HttpClient
-
-        Program.mkProgram init (update this.Snackbar) render
+        Program.mkProgram init (update this.JSRuntime this.HttpClient this.Snackbar) render
         |> Program.withRouter router
-// #if DEBUG
-//         |> Program.withConsoleTrace
-// #endif

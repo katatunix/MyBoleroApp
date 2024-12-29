@@ -14,42 +14,31 @@ type Msg =
     | Increase
     | Decrease
 
-type Intent =
-    | Nope
-    | NavigateToHome
-
 module private Storage =
     let private key = "count"
 
-    let save count =
-        count |> Js.LocalStorage.set key |> Async.StartImmediate
+    let save js count =
+        count |> Js.LocalStorage.set js key |> Async.StartImmediate
 
-    let load () =
+    let load js =
         async {
-            match! Js.LocalStorage.get key with
+            match! Js.LocalStorage.get js key with
             | Int number -> return number
             | _ -> return 0
         }
 
-let init () =
+let init js =
     Loading,
-    Cmd.OfAsync.perform Storage.load () EndLoad
+    Cmd.OfAsync.perform Storage.load js EndLoad
 
-let update msg model =
-    let model =
-        match msg, model with
-        | EndLoad count, Loading -> Done count
-        | (Increase | Decrease), Done count ->
-            let count = count + (if msg = Increase then 1 else -1)
-            Storage.save count
-            Done count
-        | _ -> model
-
-    let intent =
-        Nope
-        // if random.Next() % 2 = 0 then NavigateToHome else Nope
-
-    model, intent
+let update js msg model =
+    match msg, model with
+    | EndLoad count, Loading -> Done count
+    | (Increase | Decrease), Done count ->
+        let count = count + (if msg = Increase then 1 else -1)
+        Storage.save js count
+        Done count
+    | _ -> model
 
 let render model dispatch =
     match model with

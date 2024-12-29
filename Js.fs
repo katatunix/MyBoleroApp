@@ -1,42 +1,38 @@
 module MyBoleroApp.Js
 
 open System
+open System.IO
 open Microsoft.JSInterop
 
-let mutable runtime : IJSRuntime = null
-
-let revokeUrl (url: string) =
+let revokeUrl (js: IJSRuntime) (url: string) =
 #if DEBUG
     printfn "Js.revokeUrl: %s" url
 #endif
-    runtime.InvokeVoidAsync("revokeUrl", url).AsTask() |> Async.AwaitTask
+    js.InvokeVoidAsync("revokeUrl", url).AsTask() |> Async.AwaitTask
 
-type URL (value: string) =
+type URL (js: IJSRuntime, value: string) =
     member this.Value = value
 
     interface IDisposable with
-        member this.Dispose() = revokeUrl value |> Async.StartImmediate
+        member this.Dispose() = revokeUrl js value |> Async.StartImmediate
 
-    member this.Dispose() =
-        (this:IDisposable).Dispose()
-
-let createUrl (stream: System.IO.Stream) (contentType: string option) =
+let createUrl (js: IJSRuntime) (stream: Stream) (contentType: string option) =
     async {
-        use streamRef = new DotNetStreamReference(stream)
+        use stream = new DotNetStreamReference(stream)
         let contentType = contentType |> Option.toObj
-        let! url = runtime.InvokeAsync<string>("makeUrl", streamRef, contentType).AsTask() |> Async.AwaitTask
+        let! url = js.InvokeAsync<string>("makeUrl", stream, contentType).AsTask() |> Async.AwaitTask
 #if DEBUG
         printfn "Js.createUrl: %s" url
 #endif
-        return new URL(url)
+        return new URL(js, url)
     }
 
 module LocalStorage =
-    let set (key: string) value =
-        runtime.InvokeVoidAsync("localStorage.setItem", key, value).AsTask() |> Async.AwaitTask
+    let set (js: IJSRuntime) (key: string) (value: 'a) =
+        js.InvokeVoidAsync("localStorage.setItem", key, value).AsTask() |> Async.AwaitTask
 
-    let get (key: string) =
-        runtime.InvokeAsync<string>("localStorage.getItem", key).AsTask() |> Async.AwaitTask
+    let get (js: IJSRuntime) (key: string) =
+        js.InvokeAsync<string>("localStorage.getItem", key).AsTask() |> Async.AwaitTask
 
-    let remove (key: string) =
-        runtime.InvokeVoidAsync("localStorage.removeItem", key).AsTask() |> Async.AwaitTask
+    let remove (js: IJSRuntime) (key: string) =
+        js.InvokeVoidAsync("localStorage.removeItem", key).AsTask() |> Async.AwaitTask

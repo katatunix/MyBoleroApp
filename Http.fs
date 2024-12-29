@@ -4,8 +4,6 @@ open System
 open System.IO
 open System.Net.Http
 
-let mutable client : HttpClient = null
-
 type StreamResponse(response: IDisposable, stream: Stream, contentType: string option) =
     member this.Stream = stream
     member this.ContentType = contentType
@@ -15,7 +13,7 @@ type StreamResponse(response: IDisposable, stream: Stream, contentType: string o
             stream.Dispose()
             response.Dispose()
 
-let getStream (url: string) =
+let getStream (client: HttpClient) (url: string) =
     async {
         let! response = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead) |> Async.AwaitTask
 

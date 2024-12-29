@@ -21,25 +21,25 @@ let private ratio = float(width) / float(height)
 let private makeUrl (index: int) =
     $"https://picsum.photos/id/{index}/{width}/{height}"
 
-let init () =
+let init js client =
     let index = random.Next 1000
-    let m, cmd = Image.init (makeUrl index) (Some ratio)
+    let m, cmd = Image.init js client (makeUrl index) (Some ratio)
     { index = index; image = m },
     cmd |> Cmd.map ImageMsg
 
-let update msg model =
+let update js client msg model =
     match msg with
     | Next | Prev when model.image.IsLoading ->
         model, Cmd.none
     | Next | Prev ->
         let index = model.index + (if msg = Next then 1 else -1)
         let m, cmd =
-            model.image |> Image.update (Image.Msg.StartLoad (makeUrl index))
+            model.image |> Image.update js client (Image.Msg.StartLoad (makeUrl index))
         { model with index = index; image = m },
         cmd |> Cmd.map ImageMsg
 
     | ImageMsg msg ->
-        let m, cmd = model.image |> Image.update msg
+        let m, cmd = model.image |> Image.update js client msg
         { model with image = m }, cmd |> Cmd.map ImageMsg
 
 let render model dispatch =
