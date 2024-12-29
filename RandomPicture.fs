@@ -59,7 +59,7 @@ let render model dispatch =
                     attr.Row true
                     attr.Spacing 0
                     attr.style "position: absolute;
-                                bottom: 10px;
+                                bottom: 5px;
                                 right: 5px"
                     label $"{data.sizeInBytes/1024L}KB"
                     label $"%.2f{data.loadingTime.TotalSeconds}s"
