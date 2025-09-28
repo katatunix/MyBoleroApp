@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MyBoleroApp",
   "resources": {
-    "hash": "sha256-+dgcbwE6rTqkxXYmAiQUtVLknn/jhfGDA6xIM60Pmgc=",
+    "hash": "sha256-F8f3pm1MlEqfJvLYFVR1ij6p787rGL1rOqFdUmZjbZ8=",
     "fingerprinting": {
       "Bolero.Html.vxnzkb9l6c.wasm": "Bolero.Html.wasm",
       "Bolero.67s07y5fin.wasm": "Bolero.wasm",
@@ -50,7 +50,7 @@
       "System.Text.RegularExpressions.yb32ooq78m.wasm": "System.Text.RegularExpressions.wasm",
       "System.m0fu6d0eya.wasm": "System.wasm",
       "System.Private.CoreLib.g3snluso6x.wasm": "System.Private.CoreLib.wasm",
-      "MyBoleroApp.ycy4erey2m.wasm": "MyBoleroApp.wasm",
+      "MyBoleroApp.q6s7fesz01.wasm": "MyBoleroApp.wasm",
       "dotnet.native.n36mcp52wp.js": "dotnet.native.js",
       "dotnet.native.bo339f8jqa.wasm": "dotnet.native.wasm",
       "dotnet.js": "dotnet.js",
@@ -115,7 +115,7 @@
       "System.Text.Json.10u0b1dv2y.wasm": "sha256-H0lzAw+y8HnH/h/ZDmz9GAkf1B1PsT48cFd7TDd4DUQ=",
       "System.Text.RegularExpressions.yb32ooq78m.wasm": "sha256-XlXD/X1sknwyeRv39oXa4yxLTcaHXPHEQyzYfXofUKc=",
       "System.m0fu6d0eya.wasm": "sha256-hkGLo/MuT/FJ0Xf4XUL0D2VA4dZV532GHNB1JicxLko=",
-      "MyBoleroApp.ycy4erey2m.wasm": "sha256-8gDbZXvKcOYX+QmklxvnwjT1KIBQutpF1zxWf0/BLtA="
+      "MyBoleroApp.q6s7fesz01.wasm": "sha256-cnFn8sgpMqI8W7QsX/8/7BgoGkkXm6Lh3gLb7BFoH/w="
     }
   },
   "cacheBootResources": true,
