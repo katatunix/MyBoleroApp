@@ -2,7 +2,7 @@ module MyBoleroApp.Home
 
 open Bolero.Html
 open MudBlazor
-open Bolero.MudBlazor
+open BudBlazor
 
 let render () =
     let paper () =

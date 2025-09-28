@@ -1,13 +1,13 @@
 module MyBoleroApp.Main
 
 open System.Net.Http
-open Microsoft.AspNetCore.Components
 open Microsoft.AspNetCore.Components.Routing
 open Microsoft.JSInterop
 open Elmish
 open Bolero
 open Bolero.Html
 open MudBlazor
+open BudBlazor
 
 type Url =
     | NotFound
@@ -59,7 +59,7 @@ let init _ =
       updateNumber = 0 },
     Cmd.none
 
-let update js client (_snackbar: ISnackbar) msg model =
+let update jsRuntime httpClient (_: ISnackbar) msg model =
     let model =
         match msg with
         | UrlChanged url -> { model with currentUrl = url }
@@ -77,7 +77,7 @@ let update js client (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Counter, page when not page.IsCounter ->
         let m, cmd =
             match model.counter with
-            | None -> Counter.init js
+            | None -> Counter.init jsRuntime
             | Some m -> m, Cmd.none
         { model with currentPage = Counter; counter = Some m },
         cmd |> Cmd.map CounterMsg
@@ -85,7 +85,7 @@ let update js client (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.RandomPicture, page when not page.IsRandomPicture ->
         let m, cmd =
             match model.randomPicture with
-            | None -> RandomPicture.init js client
+            | None -> RandomPicture.init jsRuntime httpClient
             | Some m -> m, Cmd.none
         { model with currentPage = RandomPicture; randomPicture = Some m },
         cmd |> Cmd.map RandomPictureMsg
@@ -96,7 +96,7 @@ let update js client (_snackbar: ISnackbar) msg model =
     | UrlChanged Url.Gallery, page when not page.IsGallery ->
         let m, cmd =
             match model.gallery with
-            | None -> Gallery.init js client
+            | None -> Gallery.init jsRuntime httpClient
             | Some m -> m, Cmd.none
         { model with currentPage = Gallery; gallery = Some m },
         cmd |> Cmd.map GalleryMsg
@@ -111,16 +111,16 @@ let update js client (_snackbar: ISnackbar) msg model =
         { model with isMenuOpen = not model.isMenuOpen }, Cmd.none
 
     | CounterMsg msg, _ ->
-        let m = model.counter.Value |> Counter.update js msg
+        let m = model.counter.Value |> Counter.update jsRuntime msg
         { model with counter = Some m }, Cmd.none
 
     | RandomPictureMsg msg, _ ->
-        let m, cmd = model.randomPicture.Value |> RandomPicture.update js client msg
+        let m, cmd = model.randomPicture.Value |> RandomPicture.update jsRuntime httpClient msg
         { model with randomPicture = Some m },
         cmd |> Cmd.map RandomPictureMsg
 
     | GalleryMsg msg, _ ->
-        let m, cmd = model.gallery.Value |> Gallery.update js client msg
+        let m, cmd = model.gallery.Value |> Gallery.update jsRuntime httpClient msg
         { model with gallery = Some m },
         cmd |> Cmd.map GalleryMsg
 
@@ -147,7 +147,8 @@ let render model dispatch =
         comp<MudAppBar> {
             comp<MudIconButton> {
                 attr.Icon (
-                    if model.isMenuOpen then Icons.Material.Filled.MenuOpen
+                    if model.isMenuOpen
+                    then Icons.Material.Filled.MenuOpen
                     else Icons.Material.Filled.Menu)
                 attr.Color Color.Inherit
                 attr.Edge Edge.Start
@@ -157,8 +158,9 @@ let render model dispatch =
                 attr.Typo Typo.h5
                 title
             }
-            comp<MudSpacer> { attr.empty() }
+            comp<MudSpacer> { attr.empty () }
             comp<MudChip<string>> {
+                attr.Color Color.Secondary
                 string model.updateNumber
             }
         }
@@ -220,16 +222,9 @@ let render model dispatch =
         }
     }
 
-type App() =
+type App(jsRuntime: IJSRuntime, httpClient: HttpClient, snackbar: ISnackbar) =
     inherit ProgramComponent<Model,Msg>()
 
-    [<Inject>]
-    member val JSRuntime = Unchecked.defaultof<IJSRuntime> with get, set
-    [<Inject>]
-    member val HttpClient = Unchecked.defaultof<HttpClient> with get, set
-    [<Inject>]
-    member val Snackbar = Unchecked.defaultof<ISnackbar> with get, set
-
     override this.Program =
-        Program.mkProgram init (update this.JSRuntime this.HttpClient this.Snackbar) render
+        Program.mkProgram init (update jsRuntime httpClient snackbar) render
         |> Program.withRouter router

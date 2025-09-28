@@ -1,7 +1,8 @@
-module Bolero.MudBlazor
+module BudBlazor
 
-open Bolero.Html
 open Microsoft.AspNetCore.Components.Routing
+open Bolero
+open Bolero.Html
 open MudBlazor
 
 module attr =

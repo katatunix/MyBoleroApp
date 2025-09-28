@@ -2,7 +2,7 @@ module MyBoleroApp.NotFound
 
 open Bolero.Html
 open MudBlazor
-open Bolero.MudBlazor
+open BudBlazor
 
 let render () =
     comp<MudText> {

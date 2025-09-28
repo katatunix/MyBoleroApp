@@ -5,24 +5,19 @@ open System.IO
 open System.Net.Http
 
 type StreamResponse(response: IDisposable, stream: Stream, contentType: string option) =
-    member this.Stream = stream
-    member this.ContentType = contentType
+    member _.Stream = stream
+    member _.ContentType = contentType
 
     interface IDisposable with
-        member this.Dispose() =
+        member _.Dispose() =
             stream.Dispose()
             response.Dispose()
 
-let getStream (client: HttpClient) (url: string) =
+let getStream (httpClient: HttpClient) (url: string) =
     async {
-        let! response = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead) |> Async.AwaitTask
-
+        let! response = httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead) |> Async.AwaitTask
         response.EnsureSuccessStatusCode() |> ignore
-
-        let contentType =
-            Some response.Content.Headers.ContentType.MediaType
-
+        let contentType = Some response.Content.Headers.ContentType.MediaType
         let! stream = response.Content.ReadAsStreamAsync() |> Async.AwaitTask
-
         return new StreamResponse(response, stream, contentType)
     }

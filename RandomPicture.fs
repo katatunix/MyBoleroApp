@@ -1,14 +1,14 @@
 module MyBoleroApp.RandomPicture
 
 open Elmish
-open Bolero
 open Bolero.Html
 open MudBlazor
+open BudBlazor
 open MyBoleroApp.Components
 
 type Model =
     { index: int
-      image: Image.Model }
+      imageModel: Image.Model }
 
 type Msg =
     | Next
@@ -21,34 +21,33 @@ let private ratio = float(width) / float(height)
 let private makeUrl (index: int) =
     $"https://picsum.photos/id/{index}/{width}/{height}"
 
-let init js client =
+let init jsRuntime httpClient =
     let index = random.Next 1000
-    let m, cmd = Image.init js client (makeUrl index) (Some ratio)
-    { index = index; image = m },
+    let m, cmd = Image.init jsRuntime httpClient (makeUrl index) (Some ratio)
+    { index = index; imageModel = m },
     cmd |> Cmd.map ImageMsg
 
-let update js client msg model =
+let update jsRuntime httpClient msg model =
     match msg with
-    | Next | Prev when model.image.IsLoading ->
+    | Next | Prev when model.imageModel.IsLoading ->
         model, Cmd.none
     | Next | Prev ->
         let index = model.index + (if msg = Next then 1 else -1)
         let m, cmd =
-            model.image |> Image.update js client (Image.Msg.StartLoad (makeUrl index))
-        { model with index = index; image = m },
+            model.imageModel |> Image.update jsRuntime httpClient (Image.Msg.StartLoad (makeUrl index))
+        { model with index = index; imageModel = m },
         cmd |> Cmd.map ImageMsg
 
     | ImageMsg msg ->
-        let m, cmd = model.image |> Image.update js client msg
-        { model with image = m }, cmd |> Cmd.map ImageMsg
+        let m, cmd = model.imageModel |> Image.update jsRuntime httpClient msg
+        { model with imageModel = m }, cmd |> Cmd.map ImageMsg
 
 let render model dispatch =
     comp<MudStack> {
         comp<MudStack> {
             attr.style "position: relative"
-            Image.render model.image
-
-            match model.image.Data with
+            Image.render model.imageModel
+            match model.imageModel.Data with
             | Some data ->
                 let label (text: string) =
                     comp<MudChip<string>> {
@@ -65,14 +64,14 @@ let render model dispatch =
                     label $"%.2f{data.loadingTime.TotalSeconds}s"
                 }
             | None ->
-                Html.empty()
+                empty ()
         }
 
         let button (text: string) (msg: Msg) =
             comp<MudButton> {
                 attr.Variant Variant.Filled
                 attr.Color Color.Primary
-                attr.Disabled model.image.IsLoading
+                attr.Disabled model.imageModel.IsLoading
                 on.click (fun _ -> dispatch msg)
                 text
             }

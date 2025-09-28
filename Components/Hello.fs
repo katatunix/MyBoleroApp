@@ -13,5 +13,5 @@ type Hello() =
 
     override this.Render() =
         comp<MudText> {
-            "Hello: " + this.Who
+            $"Hello: {this.Who}"
         }

@@ -1,9 +1,9 @@
 module MyBoleroApp.Counter
 
 open Elmish
-open Bolero
 open Bolero.Html
 open MudBlazor
+open BudBlazor
 
 type Model =
     | Loading
@@ -35,7 +35,7 @@ let update js msg model =
     match msg, model with
     | EndLoad count, Loading -> Done count
     | (Increase | Decrease), Done count ->
-        let count = count + (if msg = Increase then 1 else -1)
+        let count = count + (if msg.IsIncrease then 1 else -1)
         Storage.save js count
         Done count
     | _ -> model
@@ -43,7 +43,7 @@ let update js msg model =
 let render model dispatch =
     match model with
     | Loading ->
-        Html.empty()
+        empty ()
 
     | Done count ->
         comp<MudStack> {
@@ -53,11 +53,9 @@ let render model dispatch =
                 attr.style "font-family: monospace"
                 string count
             }
-
             comp<MudStack> {
                 attr.Row true
                 attr.Justify Justify.FlexStart
-
                 let button (text: string) (color: Color) (msg: Msg) =
                     comp<MudButton> {
                         attr.Variant Variant.Filled
@@ -66,7 +64,6 @@ let render model dispatch =
                         on.click (fun _ -> dispatch msg)
                         text
                     }
-
                 button "Increase" Color.Primary Increase
                 button "Decrease" Color.Secondary Decrease
             }

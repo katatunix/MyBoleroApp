@@ -3,7 +3,7 @@ module MyBoleroApp.Common
 
 open System
 
-let random = System.Random()
+let random = Random()
 
 let exnMsg (ex: exn) = ex.Message
 

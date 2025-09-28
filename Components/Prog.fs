@@ -14,7 +14,10 @@ type Prog() =
 
     override this.Program =
         let init _ = this.Who
-        let update model msg = model
-        let view (model: string) dispatch =
+
+        let update model _msg = model
+
+        let view (model: string) _dispatch =
             comp<MudText> { model }
+
         Program.mkSimple init update view

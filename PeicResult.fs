@@ -3,6 +3,7 @@ module MyBoleroApp.PeicResult
 open Bolero
 open Bolero.Html
 open MudBlazor
+open BudBlazor
 
 let render () =
     let hiddenInput name value =
@@ -45,14 +46,10 @@ let render () =
         comp<MudGrid> {
             attr.Spacing 2
             attr.Justify Justify.Center
-            let item (x: Node) =
+            let item (node: Node) =
                 comp<MudItem> {
-                    attr.xs 12
-                    attr.sm 8
-                    attr.md 6
-                    attr.lg 4
-                    attr.xl 3
-                    x
+                    attr.xs 12; attr.sm 8; attr.md 6; attr.lg 4; attr.xl 3
+                    node
                 }
             item sbd
             comp<MudFlexBreak>

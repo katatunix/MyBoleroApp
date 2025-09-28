@@ -1,10 +1,11 @@
 module MyBoleroApp.Components.Image
 
 open System
-open Elmish
 open Bolero
+open Elmish
 open Bolero.Html
 open MudBlazor
+open BudBlazor
 open MyBoleroApp
 
 type Data =
@@ -14,11 +15,10 @@ type Data =
 
 type State =
     | Loading
-    | Done of Result<Data, string>
+    | Done of Data option
 
 type Model =
-    { url: string
-      ratio: float option
+    { ratio: float option
       state: State }
 
     member this.IsLoading =
@@ -26,47 +26,46 @@ type Model =
 
     member this.Data =
         match this.state with
-        | Done (Ok data) -> Some data
+        | Done data -> data
         | _ -> None
 
 type Msg =
     | StartLoad of url: string
-    | EndLoad of Result<Data, string>
+    | EndLoad of Data option
 
-let private loadCmd js client imageUrl =
+let private loadCmd jsRuntime httpClient imageUrl =
     Cmd.OfAsync.either
         (fun imageUrl -> async {
             let start = DateTime.Now
-            use! response = Http.getStream client imageUrl
+            use! response = Http.getStream httpClient imageUrl
             let length = response.Stream.Length
-            let! blobUrl = Js.createUrl js response.Stream response.ContentType
+            let! blobUrl = Js.createUrl jsRuntime response.Stream response.ContentType
             return { blobUrl = blobUrl
                      sizeInBytes = length
                      loadingTime = DateTime.Now - start }
         })
         imageUrl
-        (fun data -> EndLoad (Ok data))
-        (fun ex -> EndLoad (Error ex.Message))
+        (Some >> EndLoad)
+        (fun _ -> EndLoad None)
 
-let init js client url ratio =
-    { url = url
-      ratio = ratio
+let init jsRuntime httpClient url ratio =
+    { ratio = ratio
       state = Loading },
-    loadCmd js client url
+    loadCmd jsRuntime httpClient url
 
 let private dispose = function
-    | Ok data -> (data.blobUrl: IDisposable).Dispose()
-    | _ -> ()
+    | Some data -> (data.blobUrl: IDisposable).Dispose()
+    | None -> ()
 
-let update js client msg model =
+let update jsRuntime httpClient msg model =
     match msg, model.state with
     | StartLoad _, Loading ->
         model, Cmd.none
 
     | StartLoad url, Done result ->
         dispose result
-        { model with url = url; state = Loading },
-        loadCmd js client url
+        { model with state = Loading },
+        loadCmd jsRuntime httpClient url
 
     | EndLoad result, Loading ->
         { model with state = Done result }, Cmd.none
@@ -75,30 +74,39 @@ let update js client msg model =
         dispose result
         model, Cmd.none
 
+type private Component() =
+    inherit ElmishComponent<Model,Msg>()
+
+    override _.ShouldRender(oldModel, newModel) =
+        oldModel.state <> newModel.state
+
+    override _.View model _ =
+        let commonAttr =
+            match model.ratio with
+            | Some ratio ->
+                attr.style $"height: auto; aspect-ratio: {ratio}"
+            | None ->
+                attr.empty()
+
+        match model.state with
+        | Loading ->
+            comp<MudSkeleton> {
+                attr.SkeletonType SkeletonType.Rectangle
+                commonAttr
+            }
+
+        | Done (Some data) ->
+            comp<MudImage> {
+                attr.Src data.blobUrl.Value
+                commonAttr
+            }
+
+        | Done None ->
+            comp<MudPaper> {
+                attr.Square true
+                attr.Class "mud-error"
+                commonAttr
+            }
+
 let render model =
-    let attrRatio () =
-        match model.ratio with
-        | Some ratio ->
-            attr.style $"height: auto; aspect-ratio: {ratio}"
-        | None ->
-            attr.empty ()
-
-    match model.state with
-    | Loading ->
-        comp<MudSkeleton> {
-            attr.SkeletonType SkeletonType.Rectangle
-            attrRatio ()
-        }
-
-    | Done (Ok data) ->
-        comp<MudImage> {
-            attr.Src data.blobUrl.Value
-            attrRatio ()
-        }
-
-    | Done (Error _msg) ->
-        comp<MudPaper> {
-            attr.Square true
-            attr.Class "mud-error"
-            attrRatio ()
-        }
+    ecomp<Component,_,_> model ignore { attr.empty() }
