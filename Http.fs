@@ -15,7 +15,7 @@ type StreamResponse(response: IDisposable, stream: Stream, contentType: string o
 
 let getStream (httpClient: HttpClient) (url: string) =
     async {
-        let! response = httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead) |> Async.AwaitTask
+        let! response = httpClient.GetAsync(url) |> Async.AwaitTask
         response.EnsureSuccessStatusCode() |> ignore
         let contentType = Some response.Content.Headers.ContentType.MediaType
         let! stream = response.Content.ReadAsStreamAsync() |> Async.AwaitTask

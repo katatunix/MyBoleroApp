@@ -8,19 +8,20 @@ open MudBlazor
 open BudBlazor
 open MyBoleroApp
 
-type Data =
-    { blobUrl: Js.URL
-      sizeInBytes: int64
-      loadingTime: TimeSpan }
+type Data = {
+    blobUrl: Js.URL
+    sizeInBytes: int64
+    loadingTime: TimeSpan
+}
 
 type State =
     | Loading
     | Done of Data option
 
-type Model =
-    { ratio: float option
-      state: State }
-
+type Model = {
+    ratio: float option
+    state: State
+} with
     member this.IsLoading =
         this.state.IsLoading
 
@@ -40,18 +41,23 @@ let private loadCmd jsRuntime httpClient imageUrl =
             use! response = Http.getStream httpClient imageUrl
             let length = response.Stream.Length
             let! blobUrl = Js.createUrl jsRuntime response.Stream response.ContentType
-            return { blobUrl = blobUrl
-                     sizeInBytes = length
-                     loadingTime = DateTime.Now - start }
+            return {
+                blobUrl = blobUrl
+                sizeInBytes = length
+                loadingTime = DateTime.Now - start
+            }
         })
         imageUrl
         (Some >> EndLoad)
         (fun _ -> EndLoad None)
 
 let init jsRuntime httpClient url ratio =
-    { ratio = ratio
-      state = Loading },
-    loadCmd jsRuntime httpClient url
+    let model = {
+        ratio = ratio
+        state = Loading
+    }
+    let cmd = loadCmd jsRuntime httpClient url
+    model, cmd
 
 let private dispose = function
     | Some data -> (data.blobUrl: IDisposable).Dispose()
@@ -77,10 +83,10 @@ let update jsRuntime httpClient msg model =
 type private Component() =
     inherit ElmishComponent<Model,Msg>()
 
-    override _.ShouldRender(oldModel, newModel) =
+    override this.ShouldRender(oldModel, newModel) =
         oldModel.state <> newModel.state
 
-    override _.View model _ =
+    override this.View model _ =
         let commonAttr =
             match model.ratio with
             | Some ratio ->

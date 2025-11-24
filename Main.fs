@@ -25,15 +25,16 @@ type Page =
     | PeicResult
     | Gallery
 
-type Model =
-    { currentUrl: Url
-      isDarkMode: bool
-      isMenuOpen: bool
-      counter: Counter.Model option
-      randomPicture: RandomPicture.Model option
-      gallery: Gallery.Model option
-      currentPage: Page
-      updateNumber: int }
+type Model = {
+    currentUrl: Url
+    isDarkMode: bool
+    isMenuOpen: bool
+    counter: Counter.Model option
+    randomPicture: RandomPicture.Model option
+    gallery: Gallery.Model option
+    currentPage: Page
+    updateNumber: int
+}
 
 type Msg =
     | UrlChanged of Url
@@ -49,15 +50,17 @@ let router =
     |> Router.withNotFound Url.NotFound
 
 let init _ =
-    { currentUrl = Url.Home
-      isDarkMode = true
-      isMenuOpen = true
-      counter = None
-      randomPicture = None
-      gallery = None
-      currentPage = Home
-      updateNumber = 0 },
-    Cmd.none
+    let model = {
+        currentUrl = Url.Home
+        isDarkMode = true
+        isMenuOpen = true
+        counter = None
+        randomPicture = None
+        gallery = None
+        currentPage = Home
+        updateNumber = 0
+    }
+    model, Cmd.none
 
 let update jsRuntime httpClient (_: ISnackbar) msg model =
     let model =
@@ -158,7 +161,7 @@ let render model dispatch =
                 attr.Typo Typo.h5
                 title
             }
-            comp<MudSpacer> { attr.empty () }
+            comp<MudSpacer> { attr.empty() }
             comp<MudChip<string>> {
                 attr.Color Color.Secondary
                 string model.updateNumber

@@ -6,9 +6,10 @@ open MudBlazor
 open BudBlazor
 open MyBoleroApp.Components
 
-type Model =
-    { index: int
-      imageModel: Image.Model }
+type Model = {
+    index: int
+    imageModel: Image.Model
+}
 
 type Msg =
     | Next
@@ -57,9 +58,10 @@ let render model dispatch =
                 comp<MudStack> {
                     attr.Row true
                     attr.Spacing 0
-                    attr.style "position: absolute;
-                                bottom: 5px;
-                                right: 5px"
+                    attr.style
+                        "position: absolute;
+                        bottom: 5px;
+                        right: 5px"
                     label $"{data.sizeInBytes/1024L}KB"
                     label $"%.2f{data.loadingTime.TotalSeconds}s"
                 }
