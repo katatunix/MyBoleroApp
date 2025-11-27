@@ -3,6 +3,7 @@ name: build and deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,28 +14,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
       
-      - name: setup .net sdk
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: install wasm-tools
+      - name: Install wasm-tools
         run: dotnet workload install wasm-tools
       
-      - name: dotnet publish
+      - name: Run dotnet publish
         run: dotnet publish -p:GHPages=true -o dist
 
-      - name: upload artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist/wwwroot
+  
   deploy:
     environment:
       name: github-pages
