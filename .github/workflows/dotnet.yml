@@ -15,6 +15,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
       
       - name: setup .net sdk
         uses: actions/setup-dotnet@v4
